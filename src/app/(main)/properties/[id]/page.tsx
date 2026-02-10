@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import {
   Building2,
@@ -25,11 +25,16 @@ import {
   X,
   ChevronLeft,
   ExternalLink,
+  Camera,
+  Trash2,
+  Loader2,
+  ImagePlus,
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'sonner';
 import { locationsApi } from '@/lib/api/locations';
 import { LocationImage, BreadcrumbItem } from '@/types/location';
+import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { PageLoading } from '@/components/ui/loading-spinner';
@@ -56,11 +61,15 @@ function ImageGalleryModal({
   initialIndex,
   locationName,
   onClose,
+  onDelete,
+  isDeleting,
 }: {
   images: LocationImage[];
   initialIndex: number;
   locationName: string;
   onClose: () => void;
+  onDelete?: (imageId: string) => void;
+  isDeleting?: boolean;
 }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const image = images[currentIndex];
@@ -71,12 +80,27 @@ function ImageGalleryModal({
         <span className="text-sm text-white/70">
           {currentIndex + 1} / {images.length}
         </span>
-        <button
-          onClick={onClose}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10"
-        >
-          <X className="h-5 w-5 text-white" />
-        </button>
+        <div className="flex items-center gap-2">
+          {onDelete && (
+            <button
+              onClick={() => onDelete(image.id)}
+              disabled={isDeleting}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 disabled:opacity-50"
+            >
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin text-white" />
+              ) : (
+                <Trash2 className="h-4 w-4 text-red-400" />
+              )}
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10"
+          >
+            <X className="h-5 w-5 text-white" />
+          </button>
+        </div>
       </div>
 
       <div className="relative flex flex-1 items-center justify-center px-4">
@@ -116,7 +140,10 @@ function ImageGalleryModal({
 
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['location', id],
@@ -124,7 +151,7 @@ export default function PropertyDetailPage() {
     enabled: !!id,
   });
 
-  const { data: imagesData } = useQuery({
+  const { data: imagesData, refetch: refetchImages } = useQuery({
     queryKey: ['location-images', id],
     queryFn: () => locationsApi.getImages(id),
     enabled: !!id,
@@ -136,9 +163,49 @@ export default function PropertyDetailPage() {
     enabled: !!id,
   });
 
+  const uploadMutation = useMutation({
+    mutationFn: (file: File) => {
+      const formData = new FormData();
+      formData.append('image', file);
+      return locationsApi.uploadImage(id, formData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['location-images', id] });
+      queryClient.invalidateQueries({ queryKey: ['location', id] });
+      toast.success('Image uploaded');
+    },
+    onError: () => {
+      toast.error('Failed to upload image');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (imageId: string) => locationsApi.deleteImage(id, imageId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['location-images', id] });
+      queryClient.invalidateQueries({ queryKey: ['location', id] });
+      toast.success('Image deleted');
+      setGalleryIndex(null);
+    },
+    onError: () => {
+      toast.error('Failed to delete image');
+    },
+  });
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      for (const file of files) {
+        uploadMutation.mutate(file);
+      }
+      e.target.value = '';
+    },
+    [uploadMutation]
+  );
+
   const handleRefresh = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
+    await Promise.all([refetch(), refetchImages()]);
+  }, [refetch, refetchImages]);
 
   if (isLoading) {
     return <PageLoading />;
@@ -194,21 +261,63 @@ export default function PropertyDetailPage() {
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            {images.length > 1 && (
-              <div className="absolute bottom-3 right-3 flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1">
-                <ImageIcon className="h-3 w-3 text-white" />
-                <span className="text-xs font-medium text-white">{images.length}</span>
+            <div className="absolute bottom-3 right-3 flex items-center gap-2">
+              {images.length > 1 && (
+                <div className="flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1">
+                  <ImageIcon className="h-3 w-3 text-white" />
+                  <span className="text-xs font-medium text-white">{images.length}</span>
+                </div>
+              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50"
+              >
+                <Camera className="h-4 w-4 text-white" />
+              </button>
+            </div>
+            {uploadMutation.isPending && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                <Loader2 className="h-8 w-8 animate-spin text-white" />
               </div>
             )}
           </div>
         ) : (
-          <div className="flex items-center justify-center bg-muted/30 py-12">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex w-full items-center justify-center bg-muted/30 py-12"
+          >
             <div className="flex flex-col items-center gap-2 text-muted-foreground">
-              <Building2 className="h-10 w-10" />
-              <span className="text-xs">No image available</span>
+              {uploadMutation.isPending ? (
+                <Loader2 className="h-10 w-10 animate-spin" />
+              ) : (
+                <Camera className="h-10 w-10" />
+              )}
+              <span className="text-xs">{uploadMutation.isPending ? 'Uploading...' : 'Add Photo'}</span>
             </div>
-          </div>
+          </button>
         )}
+
+        {/* Hidden file inputs */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleFileChange}
+          className="hidden"
+        />
 
         {/* Breadcrumb */}
         {breadcrumb.length > 1 && (
@@ -294,7 +403,7 @@ export default function PropertyDetailPage() {
         </div>
 
         {/* Image Gallery */}
-        {images.length > 1 && (
+        {images.length > 0 && (
           <div className="border-b border-border">
             <p className="px-4 pt-3 pb-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Gallery ({images.length})
@@ -313,6 +422,14 @@ export default function PropertyDetailPage() {
                   />
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex h-24 w-24 flex-shrink-0 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary"
+              >
+                <ImagePlus className="h-5 w-5" />
+                <span className="text-[10px]">Add</span>
+              </button>
             </div>
           </div>
         )}
@@ -571,6 +688,8 @@ export default function PropertyDetailPage() {
           initialIndex={galleryIndex}
           locationName={location.name}
           onClose={() => setGalleryIndex(null)}
+          onDelete={(imageId) => deleteMutation.mutate(imageId)}
+          isDeleting={deleteMutation.isPending}
         />
       )}
     </div>
