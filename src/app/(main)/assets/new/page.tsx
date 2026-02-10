@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { assetsApi } from '@/lib/api/assets';
 import { locationsApi } from '@/lib/api/locations';
+import { LocationTree } from '@/types/location';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +30,17 @@ const assetSchema = z.object({
 
 type AssetFormData = z.infer<typeof assetSchema>;
 
+function flattenTree(nodes: LocationTree[], depth = 0): { id: string; name: string; depth: number }[] {
+  const result: { id: string; name: string; depth: number }[] = [];
+  for (const node of nodes) {
+    result.push({ id: node.id, name: node.name, depth });
+    if (node.children?.length) {
+      result.push(...flattenTree(node.children, depth + 1));
+    }
+  }
+  return result;
+}
+
 const STATUS_OPTIONS = [
   { value: 'active', label: 'Active' },
   { value: 'inactive', label: 'Inactive' },
@@ -43,8 +55,8 @@ export default function NewAssetPage() {
   const [serverError, setServerError] = useState('');
 
   const { data: locationsData } = useQuery({
-    queryKey: ['locations'],
-    queryFn: () => locationsApi.list(),
+    queryKey: ['locations-full-tree'],
+    queryFn: () => locationsApi.getFullTree(),
   });
 
   const {
@@ -76,7 +88,8 @@ export default function NewAssetPage() {
     createMutation.mutate(data);
   };
 
-  const locations = locationsData?.data || [];
+  const locationTree: LocationTree[] = locationsData?.data || [];
+  const flatLocations = flattenTree(locationTree);
 
   return (
     <div className="flex h-full flex-col">
@@ -153,9 +166,9 @@ export default function NewAssetPage() {
               className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="">Select a location</option>
-              {locations.map((loc) => (
+              {flatLocations.map((loc) => (
                 <option key={loc.id} value={loc.id}>
-                  {loc.name}
+                  {'—'.repeat(loc.depth)}{loc.depth > 0 ? ' ' : ''}{loc.name}
                 </option>
               ))}
             </select>
