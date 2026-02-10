@@ -24,10 +24,10 @@ import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: 'text-green-600',
-  medium: 'text-yellow-600',
-  high: 'text-orange-600',
-  critical: 'text-red-600',
+  low: 'text-green-600 dark:text-green-400',
+  medium: 'text-yellow-600 dark:text-yellow-400',
+  high: 'text-orange-600 dark:text-orange-400',
+  critical: 'text-red-600 dark:text-red-400',
 };
 
 export default function PropertyServiceRequestsPage() {

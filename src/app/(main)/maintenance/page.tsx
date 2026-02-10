@@ -41,10 +41,10 @@ const STATUS_OPTIONS: Record<string, { label: string; value: string }[]> = {
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'text-red-600',
-  high: 'text-orange-600',
-  medium: 'text-yellow-600',
-  low: 'text-green-600',
+  critical: 'text-red-600 dark:text-red-400',
+  high: 'text-orange-600 dark:text-orange-400',
+  medium: 'text-yellow-600 dark:text-yellow-400',
+  low: 'text-green-600 dark:text-green-400',
 };
 
 export default function MaintenancePage() {
