@@ -145,7 +145,7 @@ export default function NewAssetPage() {
             </Label>
             <select
               {...register('status')}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-base focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             >
               {STATUS_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -163,7 +163,7 @@ export default function NewAssetPage() {
             <Label className="mb-1">Location</Label>
             <select
               {...register('location_id')}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-base focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="">Select a location</option>
               {flatLocations.map((loc) => (

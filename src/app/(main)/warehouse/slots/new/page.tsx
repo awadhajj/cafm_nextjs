@@ -135,7 +135,7 @@ export default function CreateSlotPage() {
                   id="store_id"
                   value={selectedStoreId}
                   onChange={(e) => setSelectedStoreId(e.target.value)}
-                  className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2.5 pr-10 text-base focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   <option value="">Select a store...</option>
                   {stores.map((store: Store) => (

@@ -202,7 +202,7 @@ export default function CreateItemPage() {
               <select
                 id="default_store_id"
                 {...register('default_store_id')}
-                className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2.5 pr-10 text-base focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="">Select a store (optional)</option>
                 {stores.map((store: Store) => (

@@ -144,7 +144,7 @@ export default function NewPropertyPage() {
               id="type"
               {...register('type')}
               className={cn(
-                'w-full rounded-lg border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1',
+                'w-full rounded-lg border bg-background px-3 py-2.5 text-base focus:outline-none focus:ring-1',
                 errors.type
                   ? 'border-destructive focus:border-destructive focus:ring-destructive'
                   : 'border-border focus:border-primary focus:ring-primary'
@@ -173,7 +173,7 @@ export default function NewPropertyPage() {
               id="status"
               {...register('status')}
               className={cn(
-                'w-full rounded-lg border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1',
+                'w-full rounded-lg border bg-background px-3 py-2.5 text-base focus:outline-none focus:ring-1',
                 errors.status
                   ? 'border-destructive focus:border-destructive focus:ring-destructive'
                   : 'border-border focus:border-primary focus:ring-primary'
@@ -207,7 +207,7 @@ export default function NewPropertyPage() {
               <select
                 id="parent_location_id"
                 {...register('parent_location_id')}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-base focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="">None (Top Level)</option>
                 {parentLocations.map((loc) => (
