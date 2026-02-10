@@ -39,6 +39,7 @@ const statusColors: Record<string, string> = {
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
+  if (!status) return null;
   const colorClass = statusColors[status.toLowerCase()] || 'bg-gray-100 text-gray-700';
   const label = status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 

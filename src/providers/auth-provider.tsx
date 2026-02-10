@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       authApi
         .me()
         .then((res) => {
-          setUser(res.data);
+          setUser(res.user);
         })
         .catch(() => {
           localStorage.removeItem('auth_token');
@@ -41,9 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (email: string, password: string, subdomain: string) => {
+      localStorage.setItem('tenant_subdomain', subdomain);
       const res = await authApi.login({ email, password, subdomain });
       localStorage.setItem('auth_token', res.token);
-      localStorage.setItem('tenant_subdomain', subdomain);
       localStorage.setItem('user', JSON.stringify(res.user));
       setUser(res.user);
       router.push('/inbox');

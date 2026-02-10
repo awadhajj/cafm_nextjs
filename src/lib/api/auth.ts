@@ -23,7 +23,7 @@ export const authApi = {
     await apiClient.post('/mobile/logout');
   },
 
-  me: async (): Promise<{ success: boolean; data: User }> => {
+  me: async (): Promise<{ success: boolean; user: User }> => {
     const { data } = await apiClient.get('/mobile/me');
     return data;
   },

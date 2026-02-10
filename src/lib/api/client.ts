@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
 });
 
-// Request interceptor: attach auth token
+// Request interceptor: attach auth token and set tenant base URL
 apiClient.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('auth_token');
@@ -17,6 +17,7 @@ apiClient.interceptors.request.use((config) => {
     }
     const tenant = localStorage.getItem('tenant_subdomain');
     if (tenant) {
+      config.baseURL = `http://${tenant}.localhost:8002/api`;
       config.headers['X-Tenant'] = tenant;
     }
   }
