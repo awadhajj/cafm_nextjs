@@ -198,10 +198,10 @@ export default function WarehousePage() {
                             <Hash className="h-3 w-3" />
                             {store.store_number}
                           </span>
-                          {store.location && (
+                          {store.location?.name && (
                             <span className="flex items-center gap-1">
                               <MapPin className="h-3 w-3" />
-                              {store.location}
+                              {store.location.name}
                             </span>
                           )}
                         </div>

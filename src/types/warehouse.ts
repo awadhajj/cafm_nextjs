@@ -5,7 +5,7 @@ export interface Store {
   store_number: string;
   status: string;
   description?: string;
-  location?: string;
+  location?: { id: string; name: string } | null;
   created_at: string;
   updated_at: string;
 }
