@@ -256,7 +256,7 @@ export default function WarehousePage() {
                       </div>
                       {item.unit_price !== undefined && item.unit_price !== null && (
                         <span className="text-sm font-medium text-muted-foreground">
-                          ${item.unit_price.toFixed(2)}
+                          ${Number(item.unit_price).toFixed(2)}
                         </span>
                       )}
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
