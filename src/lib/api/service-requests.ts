@@ -1,6 +1,6 @@
 import apiClient from './client';
 import { ApiResponse, ApiListResponse } from '@/types/common';
-import { ServiceRequest } from '@/types/work-order';
+import { ServiceRequest, IssueCategory } from '@/types/work-order';
 
 export const serviceRequestsApi = {
   list: async (params?: Record<string, string>): Promise<ApiListResponse<ServiceRequest>> => {
@@ -18,6 +18,11 @@ export const serviceRequestsApi = {
     return data;
   },
 
+  issueCategories: async (): Promise<ApiResponse<IssueCategory[]>> => {
+    const { data } = await apiClient.get('/mobile/service-requests/issue-categories');
+    return data;
+  },
+
   show: async (id: string): Promise<ApiResponse<ServiceRequest>> => {
     const { data } = await apiClient.get(`/mobile/service-requests/${id}`);
     return data;
@@ -25,13 +30,21 @@ export const serviceRequestsApi = {
 
   create: async (payload: {
     title: string;
+    description: string;
+    priority: string;
+    service_type_id: string;
     failure_description?: string;
-    priority?: string;
-    service_type_id?: string;
     location_id?: string;
     asset_id?: string;
   }): Promise<ApiResponse<ServiceRequest>> => {
     const { data } = await apiClient.post('/mobile/service-requests', payload);
+    return data;
+  },
+
+  createWizard: async (formData: FormData): Promise<ApiResponse<ServiceRequest>> => {
+    const { data } = await apiClient.post('/mobile/service-requests/wizard', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return data;
   },
 

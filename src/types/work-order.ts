@@ -41,10 +41,13 @@ export interface ServiceRequest {
   id: string;
   service_request_number: string;
   title: string;
+  description?: string;
   priority?: string;
   status: string;
   service_type_id?: string;
   serviceType?: { id: string; label: string };
+  issue_category_id?: string;
+  issueCategory?: IssueCategory;
   location_id?: string;
   location?: { id: string; name: string };
   asset_id?: string;
@@ -53,9 +56,23 @@ export interface ServiceRequest {
   requester?: { id: string; name: string };
   requested_date?: string;
   failure_description?: string;
+  failure_image_urls?: string[];
   images?: { id: string; image_url: string }[];
   created_at: string;
   updated_at: string;
+}
+
+export interface IssueCategory {
+  id: string;
+  parent_id?: string;
+  service_type_id?: string;
+  label_en: string;
+  label_ar: string;
+  icon?: string;
+  color?: string;
+  sort_order: number;
+  is_active: boolean;
+  children?: IssueCategory[];
 }
 
 export interface Staff {
