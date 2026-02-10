@@ -34,6 +34,9 @@ const statusColors: Record<string, string> = {
 
   // Service Requests
   draft: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
+  waiting_planner: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+  waiting_planner_final_approval: 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400',
+  work_in_progress: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-400',
   open: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400',
   closed: 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400',
 };

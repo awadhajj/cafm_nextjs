@@ -58,8 +58,21 @@ export interface ServiceRequest {
   failure_description?: string;
   failure_image_urls?: string[];
   images?: { id: string; image_url: string }[];
+  assigned_supervisor_id?: string;
+  assignedSupervisor?: Staff;
+  planner_id?: string;
+  planner?: Staff;
+  planner_notes?: string;
+  work_orders?: WorkOrder[];
   created_at: string;
   updated_at: string;
+}
+
+export interface Supervisor {
+  id: string;
+  staff_name: string;
+  staff_type?: string;
+  current_workload?: number;
 }
 
 export interface IssueCategory {

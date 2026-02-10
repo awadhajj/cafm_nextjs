@@ -1,6 +1,6 @@
 import apiClient from './client';
 import { ApiResponse, ApiListResponse } from '@/types/common';
-import { ServiceRequest, IssueCategory } from '@/types/work-order';
+import { ServiceRequest, IssueCategory, Supervisor } from '@/types/work-order';
 
 export const serviceRequestsApi = {
   list: async (params?: Record<string, string>): Promise<ApiListResponse<ServiceRequest>> => {
@@ -57,6 +57,30 @@ export const serviceRequestsApi = {
 
   publish: async (id: string): Promise<ApiResponse<ServiceRequest>> => {
     const { data } = await apiClient.post(`/mobile/service-requests/${id}/publish`);
+    return data;
+  },
+
+  availableSupervisors: async (id: string): Promise<ApiResponse<Supervisor[]>> => {
+    const { data } = await apiClient.get(`/mobile/service-requests/${id}/available-supervisors`);
+    return data;
+  },
+
+  assignSupervisor: async (id: string, supervisorId: string): Promise<ApiResponse<ServiceRequest>> => {
+    const { data } = await apiClient.post(`/mobile/service-requests/${id}/assign-supervisor`, {
+      supervisor_id: supervisorId,
+    });
+    return data;
+  },
+
+  approve: async (id: string, payload?: { planner_notes?: string; allow_off_duty?: boolean }): Promise<ApiResponse<ServiceRequest>> => {
+    const { data } = await apiClient.post(`/mobile/service-requests/${id}/approve`, payload);
+    return data;
+  },
+
+  reject: async (id: string, reason: string): Promise<ApiResponse<ServiceRequest>> => {
+    const { data } = await apiClient.post(`/mobile/service-requests/${id}/reject`, {
+      rejection_reason: reason,
+    });
     return data;
   },
 };
