@@ -3,6 +3,7 @@
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface PageHeaderProps {
   title: string;
@@ -32,12 +33,12 @@ export function PageHeader({
   };
 
   return (
-    <div className={cn('sticky top-0 z-10 border-b border-border bg-white px-4 py-3 safe-top', className)}>
+    <div className={cn('sticky top-0 z-10 border-b border-border bg-background px-4 py-3 safe-top', className)}>
       <div className="flex items-center gap-3">
         {showBack && (
-          <button onClick={handleBack} className="rounded-lg p-1 hover:bg-muted">
+          <Button variant="ghost" size="icon" onClick={handleBack} className="h-8 w-8">
             <ArrowLeft className="h-5 w-5" />
-          </button>
+          </Button>
         )}
         <div className="flex-1 min-w-0">
           <h1 className="text-lg font-semibold truncate">{title}</h1>

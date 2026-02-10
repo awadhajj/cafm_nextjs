@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { X, Camera, Keyboard } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface QRScannerProps {
   onScan: (result: string) => void;
@@ -63,16 +65,23 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
         <div className="flex items-center justify-between px-4 py-3">
           <h2 className="text-lg font-semibold text-white">Scan QR / Barcode</h2>
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setShowManualInput(!showManualInput)}
-              className="rounded-lg bg-white/20 p-2 text-white"
+              className="text-white hover:bg-white/20"
             >
               {showManualInput ? <Camera className="h-5 w-5" /> : <Keyboard className="h-5 w-5" />}
-            </button>
+            </Button>
             {onClose && (
-              <button onClick={onClose} className="rounded-lg bg-white/20 p-2 text-white">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="text-white hover:bg-white/20"
+              >
                 <X className="h-5 w-5" />
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -81,27 +90,24 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
         {showManualInput ? (
           <div className="flex flex-1 items-center justify-center px-4">
             <form onSubmit={handleManualSubmit} className="w-full max-w-sm space-y-4">
-              <input
+              <Input
                 type="text"
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
                 placeholder="Enter code manually"
                 autoFocus
-                className="w-full rounded-lg border border-white/30 bg-white/10 px-4 py-3 text-white placeholder-white/50 focus:border-white focus:outline-none"
+                className="border-white/30 bg-white/10 text-white placeholder:text-white/50 focus:border-white"
               />
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-white"
-              >
+              <Button type="submit" className="w-full">
                 Look Up
-              </button>
+              </Button>
             </form>
           </div>
         ) : (
           <div className="flex flex-1 items-center justify-center">
             <div id="qr-reader" className="w-full max-w-sm" />
             {error && (
-              <div className="absolute bottom-20 left-4 right-4 rounded-lg bg-red-500/90 px-4 py-3 text-sm text-white">
+              <div className="absolute bottom-20 left-4 right-4 rounded-lg bg-destructive/90 px-4 py-3 text-sm text-white">
                 {error}
               </div>
             )}

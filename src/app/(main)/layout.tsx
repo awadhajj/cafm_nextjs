@@ -50,7 +50,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <main className="flex-1 overflow-y-auto">{children}</main>
 
       {/* Bottom navigation */}
-      <nav className="safe-bottom border-t border-border bg-white">
+      <nav className="safe-bottom border-t border-border bg-background">
         <div className="flex items-center justify-around px-1 py-1">
           {navItems.map((item) => {
             const isActive =
