@@ -16,7 +16,7 @@ const locationSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255),
   code: z.string().min(1, 'Code is required').max(50),
   location_type: z.enum(['campus', 'building', 'floor', 'room'], {
-    required_error: 'Location type is required',
+    message: 'Location type is required',
   }),
   status: z.string().min(1, 'Status is required'),
   description: z.string().optional(),

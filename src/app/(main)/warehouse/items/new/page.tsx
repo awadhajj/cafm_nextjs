@@ -19,9 +19,9 @@ const createItemSchema = z.object({
   barcode: z.string().optional(),
   category_id: z.string().optional(),
   default_store_id: z.string().optional(),
-  min_level: z.coerce.number().min(0, 'Must be 0 or greater').optional().or(z.literal('')),
-  max_level: z.coerce.number().min(0, 'Must be 0 or greater').optional().or(z.literal('')),
-  unit_price: z.coerce.number().min(0, 'Must be 0 or greater').optional().or(z.literal('')),
+  min_level: z.string().optional(),
+  max_level: z.string().optional(),
+  unit_price: z.string().optional(),
   part_number: z.string().optional(),
 });
 
