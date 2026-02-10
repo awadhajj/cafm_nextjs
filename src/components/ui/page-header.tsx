@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 interface PageHeaderProps {
   title: string;
@@ -46,7 +47,10 @@ export function PageHeader({
             <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
           )}
         </div>
-        {actions && <div className="flex items-center gap-2">{actions}</div>}
+        <div className="flex items-center gap-2">
+          {actions}
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );
