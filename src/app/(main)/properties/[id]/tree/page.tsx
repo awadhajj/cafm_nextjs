@@ -81,20 +81,22 @@ function TreeNode({ node, depth, currentLocationId }: TreeNodeProps) {
             >
               {node.name}
             </p>
-            <p className="text-xs text-muted-foreground font-mono">
-              {node.code}
-            </p>
+            {node.status && (
+              <p className="text-xs text-muted-foreground capitalize">
+                {node.status}
+              </p>
+            )}
           </div>
 
           {/* Type Badge */}
           <span
             className={cn(
               'flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium',
-              LOCATION_TYPE_COLORS[node.location_type] ||
+              LOCATION_TYPE_COLORS[node.type] ||
                 'bg-gray-100 text-gray-700'
             )}
           >
-            {node.location_type}
+            {node.type}
           </span>
         </Link>
       </div>

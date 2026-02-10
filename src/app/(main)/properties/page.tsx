@@ -1,25 +1,30 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Building2, Plus, MapPin, Filter, ChevronRight } from 'lucide-react';
+import {
+  Building2,
+  Plus,
+  Filter,
+  ChevronDown,
+  ChevronRight,
+  GitBranch,
+} from 'lucide-react';
 import { locationsApi } from '@/lib/api/locations';
-import { Location } from '@/types/location';
+import { LocationTree } from '@/types/location';
 import { PageHeader } from '@/components/ui/page-header';
 import { SearchBar } from '@/components/ui/search-bar';
-import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageLoading } from '@/components/ui/loading-spinner';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { cn } from '@/lib/utils';
 
-const LOCATION_TYPE_LABELS: Record<string, string> = {
-  campus: 'Campus',
-  building: 'Building',
-  floor: 'Floor',
-  room: 'Room',
+const LOCATION_TYPE_COLORS: Record<string, string> = {
+  campus: 'bg-purple-100 text-purple-700',
+  building: 'bg-blue-100 text-blue-700',
+  floor: 'bg-green-100 text-green-700',
+  room: 'bg-orange-100 text-orange-700',
 };
 
 const LOCATION_TYPE_FILTERS = [
@@ -30,8 +35,103 @@ const LOCATION_TYPE_FILTERS = [
   { key: 'room', label: 'Room' },
 ];
 
+function filterTree(
+  nodes: LocationTree[],
+  search: string,
+  typeFilter: string
+): LocationTree[] {
+  const lowerSearch = search.toLowerCase();
+
+  return nodes.reduce<LocationTree[]>((acc, node) => {
+    const filteredChildren = filterTree(node.children, search, typeFilter);
+
+    const nameMatches = !search || node.name.toLowerCase().includes(lowerSearch);
+    const typeMatches = !typeFilter || node.type === typeFilter;
+    const selfMatches = nameMatches && typeMatches;
+
+    if (selfMatches || filteredChildren.length > 0) {
+      acc.push({
+        ...node,
+        children: selfMatches && !search && !typeFilter
+          ? node.children
+          : filteredChildren,
+      });
+    }
+
+    return acc;
+  }, []);
+}
+
+interface TreeNodeProps {
+  node: LocationTree;
+  depth: number;
+  defaultExpanded?: boolean;
+}
+
+function TreeNode({ node, depth, defaultExpanded = false }: TreeNodeProps) {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const hasChildren = node.children && node.children.length > 0;
+
+  return (
+    <div>
+      <div
+        className="flex items-center gap-2 px-4 py-2.5 border-b border-border"
+        style={{ paddingLeft: `${16 + depth * 20}px` }}
+      >
+        {hasChildren ? (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded hover:bg-muted"
+          >
+            {isExpanded ? (
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+        ) : (
+          <div className="w-6 flex-shrink-0" />
+        )}
+
+        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded bg-muted">
+          <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+        </div>
+
+        <Link
+          href={`/properties/${node.id}`}
+          className="flex flex-1 items-center gap-2 min-w-0"
+        >
+          <p className="flex-1 text-sm font-medium truncate min-w-0">
+            {node.name}
+          </p>
+          <span
+            className={cn(
+              'flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium capitalize',
+              LOCATION_TYPE_COLORS[node.type] || 'bg-gray-100 text-gray-700'
+            )}
+          >
+            {node.type}
+          </span>
+        </Link>
+      </div>
+
+      {hasChildren && isExpanded && (
+        <div>
+          {node.children.map((child) => (
+            <TreeNode
+              key={child.id}
+              node={child}
+              depth={depth + 1}
+              defaultExpanded={false}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function PropertiesPage() {
-  const router = useRouter();
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
@@ -53,13 +153,9 @@ export default function PropertiesPage() {
     };
   }, [search]);
 
-  const params: Record<string, string> = {};
-  if (debouncedSearch) params.search = debouncedSearch;
-  if (typeFilter) params.location_type = typeFilter;
-
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['locations', debouncedSearch, typeFilter],
-    queryFn: () => locationsApi.list(params),
+    queryKey: ['locations-full-tree'],
+    queryFn: () => locationsApi.getFullTree(),
   });
 
   const handleRefresh = useCallback(async () => {
@@ -70,7 +166,14 @@ export default function PropertiesPage() {
     setSearch(query);
   }, []);
 
-  const locations: Location[] = data?.data || [];
+  const allTrees: LocationTree[] = data?.data || [];
+
+  const filteredTrees = useMemo(
+    () => filterTree(allTrees, debouncedSearch, typeFilter),
+    [allTrees, debouncedSearch, typeFilter]
+  );
+
+  const isFiltering = !!debouncedSearch || !!typeFilter;
 
   return (
     <div className="flex h-full flex-col">
@@ -128,22 +231,40 @@ export default function PropertiesPage() {
         )}
       </div>
 
+      {/* Legend */}
+      <div className="flex items-center gap-3 border-b border-border px-4 py-2 overflow-x-auto bg-white">
+        <span className="flex-shrink-0 text-xs text-muted-foreground">
+          Types:
+        </span>
+        {Object.entries(LOCATION_TYPE_COLORS).map(([type, color]) => (
+          <span
+            key={type}
+            className={cn(
+              'flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium capitalize',
+              color
+            )}
+          >
+            {type}
+          </span>
+        ))}
+      </div>
+
       {/* Content */}
       {isLoading ? (
         <PageLoading />
       ) : (
         <PullToRefresh onRefresh={handleRefresh} className="flex-1">
-          {locations.length === 0 ? (
+          {filteredTrees.length === 0 ? (
             <EmptyState
-              icon={Building2}
+              icon={isFiltering ? GitBranch : Building2}
               title="No locations found"
               description={
-                debouncedSearch || typeFilter
+                isFiltering
                   ? 'Try adjusting your search or filters'
                   : 'Get started by adding your first location'
               }
               action={
-                !debouncedSearch && !typeFilter ? (
+                !isFiltering ? (
                   <Link
                     href="/properties/new"
                     className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white"
@@ -155,40 +276,14 @@ export default function PropertiesPage() {
               }
             />
           ) : (
-            <div className="divide-y divide-border">
-              {locations.map((location) => (
-                <Link
-                  key={location.id}
-                  href={`/properties/${location.id}`}
-                  className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-muted/50"
-                >
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
-                    <Building2 className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium truncate">
-                        {location.name}
-                      </p>
-                      <StatusBadge status={location.status} />
-                    </div>
-                    <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="font-mono">{location.code}</span>
-                      <span>·</span>
-                      <span>
-                        {LOCATION_TYPE_LABELS[location.location_type] ||
-                          location.location_type}
-                      </span>
-                    </div>
-                    {location.parent && (
-                      <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        <span className="truncate">{location.parent.name}</span>
-                      </div>
-                    )}
-                  </div>
-                  <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                </Link>
+            <div>
+              {filteredTrees.map((tree) => (
+                <TreeNode
+                  key={tree.id}
+                  node={tree}
+                  depth={0}
+                  defaultExpanded={isFiltering}
+                />
               ))}
             </div>
           )}

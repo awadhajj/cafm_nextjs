@@ -33,6 +33,11 @@ export const locationsApi = {
     return data;
   },
 
+  getFullTree: async (): Promise<ApiResponse<LocationTree[]>> => {
+    const { data } = await apiClient.get('/mobile/locations-tree');
+    return data;
+  },
+
   findByQrCode: async (qrcode: string): Promise<ApiResponse<Location>> => {
     const { data } = await apiClient.get(`/mobile/locations/qrcode/${qrcode}`);
     return data;

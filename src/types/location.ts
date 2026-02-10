@@ -31,7 +31,7 @@ export interface LocationImage {
 export interface LocationTree {
   id: string;
   name: string;
-  code: string;
-  location_type: string;
+  type: string;
+  status: string;
   children: LocationTree[];
 }
