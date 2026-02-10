@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 const locationSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255),
   code: z.string().min(1, 'Code is required').max(50),
-  location_type: z.enum(['campus', 'building', 'floor', 'room'], {
+  type: z.enum(['campus', 'building', 'floor', 'room'], {
     message: 'Location type is required',
   }),
   status: z.string().min(1, 'Status is required'),
@@ -70,7 +70,7 @@ export default function EditPropertyPage() {
       reset({
         name: location.name,
         code: location.code,
-        location_type: location.location_type as LocationFormData['location_type'],
+        type: location.type as LocationFormData['type'],
         status: location.status,
         description: location.description || '',
         parent_location_id: location.parent_location_id || '',
@@ -190,17 +190,17 @@ export default function EditPropertyPage() {
           {/* Location Type */}
           <div>
             <label
-              htmlFor="location_type"
+              htmlFor="type"
               className="mb-1.5 block text-sm font-medium"
             >
               Location Type <span className="text-red-500">*</span>
             </label>
             <select
-              id="location_type"
-              {...register('location_type')}
+              id="type"
+              {...register('type')}
               className={cn(
                 'w-full rounded-lg border bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-1',
-                errors.location_type
+                errors.type
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                   : 'border-border focus:border-primary focus:ring-primary'
               )}
@@ -212,9 +212,9 @@ export default function EditPropertyPage() {
                 </option>
               ))}
             </select>
-            {errors.location_type && (
+            {errors.type && (
               <p className="mt-1 text-xs text-red-500">
-                {errors.location_type.message}
+                {errors.type.message}
               </p>
             )}
           </div>
