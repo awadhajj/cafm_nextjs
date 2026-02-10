@@ -167,7 +167,7 @@ export default function PropertiesPage() {
     setSearch(query);
   }, []);
 
-  const allTrees: LocationTree[] = data?.data || [];
+  const allTrees: LocationTree[] = (data?.data || []).filter((node) => node.name?.trim());
 
   const filteredTrees = useMemo(
     () => filterTree(allTrees, debouncedSearch, typeFilter),
