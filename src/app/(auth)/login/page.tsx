@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/providers/auth-provider';
-import { Building2, Eye, EyeOff } from 'lucide-react';
+import { Building2, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -42,77 +47,70 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl bg-white p-6 shadow-sm">
-        {error && (
-          <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </div>
-        )}
+      <Card>
+        <CardContent className="pt-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-        <div>
-          <label htmlFor="subdomain" className="mb-1 block text-sm font-medium">
-            Organization
-          </label>
-          <input
-            id="subdomain"
-            type="text"
-            value={subdomain}
-            onChange={(e) => setSubdomain(e.target.value)}
-            placeholder="your-organization"
-            required
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="subdomain">Organization</Label>
+              <Input
+                id="subdomain"
+                type="text"
+                value={subdomain}
+                onChange={(e) => setSubdomain(e.target.value)}
+                placeholder="your-organization"
+                required
+              />
+            </div>
 
-        <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            required
-            autoComplete="email"
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+                autoComplete="email"
+              />
+            </div>
 
-        <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium">
-            Password
-          </label>
-          <div className="relative">
-            <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-              autoComplete="current-password"
-              className="w-full rounded-lg border border-border px-3 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
-          </div>
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  required
+                  autoComplete="current-password"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
-        >
-          {isSubmitting ? 'Signing in...' : 'Sign In'}
-        </button>
-      </form>
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {isSubmitting ? 'Signing in...' : 'Sign In'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

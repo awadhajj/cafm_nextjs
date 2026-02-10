@@ -9,6 +9,10 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { PageLoading } from '@/components/ui/loading-spinner';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import {
   Calendar,
   MapPin,
@@ -40,10 +44,10 @@ import { PpmWorkOrder } from '@/types/ppm';
 import { TimeEntry } from '@/types/work-order';
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'text-red-600 bg-red-50',
-  high: 'text-orange-600 bg-orange-50',
-  medium: 'text-yellow-600 bg-yellow-50',
-  low: 'text-green-600 bg-green-50',
+  critical: 'text-red-600 bg-red-50 dark:bg-red-950',
+  high: 'text-orange-600 bg-orange-50 dark:bg-orange-950',
+  medium: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-950',
+  low: 'text-green-600 bg-green-50 dark:bg-green-950',
 };
 
 function formatElapsedTime(startedAt: string): string {
@@ -294,7 +298,7 @@ export default function PpmWorkOrderDetailPage() {
 
       <div className="flex-1 overflow-y-auto pb-48">
         {/* Status Bar */}
-        <div className="border-b border-border bg-white px-4 py-3">
+        <div className="border-b border-border bg-card px-4 py-3">
           <div className="flex items-center gap-2 flex-wrap">
             <StatusBadge status={ppm.status} />
             {ppm.priority && (
@@ -311,7 +315,7 @@ export default function PpmWorkOrderDetailPage() {
         </div>
 
         {/* PPM Info */}
-        <div className="border-b border-border bg-white px-4 py-4">
+        <div className="border-b border-border bg-card px-4 py-4">
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             PPM Work Order Info
           </h2>
@@ -455,7 +459,7 @@ export default function PpmWorkOrderDetailPage() {
 
         {/* Asset & Location */}
         {(ppm.asset || ppm.location) && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Asset & Location
             </h2>
@@ -487,7 +491,7 @@ export default function PpmWorkOrderDetailPage() {
 
         {/* Task Instruction Sheet Sequences */}
         {ppm.taskInstructionSheet && ppm.taskInstructionSheet.sequences && ppm.taskInstructionSheet.sequences.length > 0 && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               <div className="flex items-center gap-2">
                 <ListChecks className="h-4 w-4" />
@@ -519,7 +523,7 @@ export default function PpmWorkOrderDetailPage() {
 
         {/* Craftsmen */}
         {ppm.craftsmen && ppm.craftsmen.length > 0 && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
@@ -554,7 +558,7 @@ export default function PpmWorkOrderDetailPage() {
         )}
 
         {/* Timer and Time Entries */}
-        <div className="border-b border-border bg-white px-4 py-4">
+        <div className="border-b border-border bg-card px-4 py-4">
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             <div className="flex items-center gap-2">
               <Timer className="h-4 w-4" />
@@ -570,14 +574,14 @@ export default function PpmWorkOrderDetailPage() {
                   <p className="text-xs font-medium text-primary">Timer Running</p>
                   <p className="text-2xl font-mono font-bold text-primary">{timerDisplay}</p>
                 </div>
-                <button
+                <Button
+                  variant="destructive"
                   onClick={() => stopTimerMutation.mutate(undefined)}
                   disabled={stopTimerMutation.isPending}
-                  className="flex items-center gap-1.5 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50"
                 >
                   <Square className="h-4 w-4" />
                   Stop
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -585,21 +589,22 @@ export default function PpmWorkOrderDetailPage() {
           {/* Timer Controls */}
           {!timerStatus?.has_active_timer && showTimerControls && (
             <div className="mb-3 flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                className="flex-1 border-primary text-primary hover:bg-primary/10"
                 onClick={() => startTimerMutation.mutate()}
                 disabled={startTimerMutation.isPending}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary/5 px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"
               >
                 <Play className="h-4 w-4" />
                 Start Timer
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => setShowLogTimeForm(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50"
               >
                 <Plus className="h-4 w-4" />
                 Log Time
-              </button>
+              </Button>
             </div>
           )}
 
@@ -607,36 +612,42 @@ export default function PpmWorkOrderDetailPage() {
           {showLogTimeForm && (
             <div className="mb-3 rounded-lg border border-border p-3 space-y-3">
               <p className="text-sm font-medium">Log Time Manually</p>
-              <input
-                type="number"
-                step="0.25"
-                min="0.25"
-                placeholder="Hours (e.g., 1.5)"
-                value={logTimeHours}
-                onChange={(e) => setLogTimeHours(e.target.value)}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <input
-                type="text"
-                placeholder="Notes (optional)"
-                value={logTimeNotes}
-                onChange={(e) => setLogTimeNotes(e.target.value)}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+              <div className="space-y-1.5">
+                <Label htmlFor="logTimeHours">Hours</Label>
+                <Input
+                  id="logTimeHours"
+                  type="number"
+                  step="0.25"
+                  min="0.25"
+                  placeholder="Hours (e.g., 1.5)"
+                  value={logTimeHours}
+                  onChange={(e) => setLogTimeHours(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="logTimeNotes">Notes</Label>
+                <Input
+                  id="logTimeNotes"
+                  type="text"
+                  placeholder="Notes (optional)"
+                  value={logTimeNotes}
+                  onChange={(e) => setLogTimeNotes(e.target.value)}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  className="flex-1"
                   onClick={handleLogTime}
                   disabled={logTimeMutation.isPending || !logTimeHours}
-                  className="flex-1 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
                 >
                   Log Time
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowLogTimeForm(false)}
-                  className="rounded-lg border border-border px-3 py-2 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -674,7 +685,7 @@ export default function PpmWorkOrderDetailPage() {
 
         {/* Warehouse Reservations */}
         {(reservations.length > 0 || (ppm.warehouseReservations && ppm.warehouseReservations.length > 0)) && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4" />
@@ -710,7 +721,7 @@ export default function PpmWorkOrderDetailPage() {
 
         {/* Materials Required */}
         {ppm.materials_required && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Materials Required
             </h2>
@@ -720,7 +731,7 @@ export default function PpmWorkOrderDetailPage() {
 
         {/* Attachments */}
         {ppm.attachments && ppm.attachments.length > 0 && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Attachments ({ppm.attachments.length})
             </h2>
@@ -743,77 +754,83 @@ export default function PpmWorkOrderDetailPage() {
       </div>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-white px-4 py-3 safe-bottom">
+      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background px-4 py-3 safe-bottom">
         <div className="space-y-2">
           {/* Start Action */}
           {canStart && (
-            <button
+            <Button
+              className="w-full py-3"
+              size="lg"
               onClick={() => startMutation.mutate()}
               disabled={startMutation.isPending}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               <Play className="h-4 w-4" />
               {startMutation.isPending ? 'Starting...' : 'Start Work'}
-            </button>
+            </Button>
           )}
 
           {/* In Progress Actions: Hold and Complete/Submit */}
           {canHold && !showHoldForm && !showCompleteForm && (
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                className="flex-1 border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
                 onClick={() => setShowHoldForm(true)}
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-orange-300 px-4 py-3 text-sm font-medium text-orange-600 transition-colors hover:bg-orange-50"
               >
                 <Pause className="h-4 w-4" />
                 Hold
-              </button>
-              <button
+              </Button>
+              <Button
+                className="flex-1 bg-green-600 hover:bg-green-700"
                 onClick={() => setShowCompleteForm(true)}
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-green-700"
               >
                 <CheckCircle className="h-4 w-4" />
                 Complete
-              </button>
+              </Button>
             </div>
           )}
 
           {/* Submit (separate from complete) */}
           {canSubmit && !showHoldForm && !showCompleteForm && (
-            <button
+            <Button
+              variant="outline"
+              className="w-full border-primary text-primary hover:bg-primary/5"
               onClick={() => submitMutation.mutate()}
               disabled={submitMutation.isPending}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-primary px-4 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-primary/5 disabled:opacity-50"
             >
               <Send className="h-4 w-4" />
               {submitMutation.isPending ? 'Submitting...' : 'Submit for Verification'}
-            </button>
+            </Button>
           )}
 
           {/* Hold Form */}
           {showHoldForm && (
-            <div className="space-y-3 rounded-lg border border-orange-200 bg-orange-50 p-3">
-              <p className="text-sm font-medium text-orange-700">Put On Hold</p>
-              <textarea
-                placeholder="Reason for hold..."
-                value={holdReason}
-                onChange={(e) => setHoldReason(e.target.value)}
-                rows={2}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 resize-none"
-              />
+            <div className="space-y-3 rounded-lg border border-orange-200 bg-orange-50 dark:bg-orange-950 p-3">
+              <p className="text-sm font-medium text-orange-700 dark:text-orange-400">Put On Hold</p>
+              <div className="space-y-1.5">
+                <Label htmlFor="holdReason">Reason for hold</Label>
+                <Textarea
+                  id="holdReason"
+                  placeholder="Reason for hold..."
+                  value={holdReason}
+                  onChange={(e) => setHoldReason(e.target.value)}
+                  rows={2}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  className="flex-1 bg-orange-500 hover:bg-orange-600"
                   onClick={() => holdMutation.mutate(holdReason)}
                   disabled={holdMutation.isPending || !holdReason}
-                  className="flex-1 rounded-lg bg-orange-500 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {holdMutation.isPending ? 'Submitting...' : 'Confirm Hold'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowHoldForm(false)}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -822,41 +839,45 @@ export default function PpmWorkOrderDetailPage() {
           {showCompleteForm && (
             <div className="space-y-3 rounded-lg border border-border p-3">
               <p className="text-sm font-medium">Complete Work Order</p>
-              <textarea
-                placeholder="Completion notes..."
-                value={completeNotes}
-                onChange={(e) => setCompleteNotes(e.target.value)}
-                rows={3}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-              />
+              <div className="space-y-1.5">
+                <Label htmlFor="completeNotes">Completion notes</Label>
+                <Textarea
+                  id="completeNotes"
+                  placeholder="Completion notes..."
+                  value={completeNotes}
+                  onChange={(e) => setCompleteNotes(e.target.value)}
+                  rows={3}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700"
                   onClick={() => completeMutation.mutate()}
                   disabled={completeMutation.isPending}
-                  className="flex-1 rounded-lg bg-green-600 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {completeMutation.isPending ? 'Submitting...' : 'Submit Completion'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowCompleteForm(false)}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
 
           {/* Resume Action */}
           {canResume && (
-            <button
+            <Button
+              className="w-full py-3"
+              size="lg"
               onClick={() => resumeMutation.mutate()}
               disabled={resumeMutation.isPending}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               <RotateCcw className="h-4 w-4" />
               {resumeMutation.isPending ? 'Resuming...' : 'Resume Work'}
-            </button>
+            </Button>
           )}
 
           {/* Pending Verification Actions */}
@@ -864,32 +885,33 @@ export default function PpmWorkOrderDetailPage() {
             <div className="space-y-2">
               <div className="flex gap-2">
                 {canVerify && (
-                  <button
+                  <Button
+                    className="flex-1 bg-purple-600 hover:bg-purple-700"
                     onClick={() => setShowVerifyForm(true)}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-purple-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-purple-700"
                   >
                     <ShieldCheck className="h-4 w-4" />
                     Verify
-                  </button>
+                  </Button>
                 )}
                 {canAcceptWork && (
-                  <button
+                  <Button
+                    className="flex-1 bg-green-600 hover:bg-green-700"
                     onClick={() => setShowAcceptForm(true)}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-green-700"
                   >
                     <ThumbsUp className="h-4 w-4" />
                     Accept
-                  </button>
+                  </Button>
                 )}
               </div>
               {canRequireRework && (
-                <button
+                <Button
+                  variant="outline"
+                  className="w-full border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
                   onClick={() => setShowReworkForm(true)}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-orange-300 px-4 py-2.5 text-sm font-medium text-orange-600 transition-colors hover:bg-orange-50"
                 >
                   <RotateCw className="h-4 w-4" />
                   Require Rework
-                </button>
+                </Button>
               )}
             </div>
           )}
@@ -898,23 +920,24 @@ export default function PpmWorkOrderDetailPage() {
           {(canApprove || canReject) && !showRejectForm && !showVerifyForm && !showAcceptForm && !showReworkForm && (
             <div className="flex gap-2">
               {canApprove && (
-                <button
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700"
                   onClick={() => approveMutation.mutate()}
                   disabled={approveMutation.isPending}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
                 >
                   <ThumbsUp className="h-4 w-4" />
                   {approveMutation.isPending ? 'Approving...' : 'Approve'}
-                </button>
+                </Button>
               )}
               {canReject && (
-                <button
+                <Button
+                  variant="destructive"
+                  className="flex-1"
                   onClick={() => setShowRejectForm(true)}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-600"
                 >
                   <ThumbsDown className="h-4 w-4" />
                   Reject
-                </button>
+                </Button>
               )}
             </div>
           )}
@@ -924,7 +947,7 @@ export default function PpmWorkOrderDetailPage() {
             <div className="space-y-3 rounded-lg border border-border p-3">
               <p className="text-sm font-medium">Verify Work Order</p>
               <div>
-                <p className="mb-1 text-xs text-muted-foreground">Quality Rating</p>
+                <Label className="mb-1">Quality Rating</Label>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button key={star} onClick={() => setVerifyRating(star)} className="p-0.5">
@@ -940,27 +963,30 @@ export default function PpmWorkOrderDetailPage() {
                   ))}
                 </div>
               </div>
-              <textarea
-                placeholder="Verification notes (optional)..."
-                value={verifyNotes}
-                onChange={(e) => setVerifyNotes(e.target.value)}
-                rows={2}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-              />
+              <div className="space-y-1.5">
+                <Label htmlFor="verifyNotes">Verification notes</Label>
+                <Textarea
+                  id="verifyNotes"
+                  placeholder="Verification notes (optional)..."
+                  value={verifyNotes}
+                  onChange={(e) => setVerifyNotes(e.target.value)}
+                  rows={2}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  className="flex-1 bg-purple-600 hover:bg-purple-700"
                   onClick={() => verifyMutation.mutate({ quality_rating: verifyRating, notes: verifyNotes || undefined })}
                   disabled={verifyMutation.isPending}
-                  className="flex-1 rounded-lg bg-purple-600 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {verifyMutation.isPending ? 'Verifying...' : 'Confirm Verification'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowVerifyForm(false)}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -970,7 +996,7 @@ export default function PpmWorkOrderDetailPage() {
             <div className="space-y-3 rounded-lg border border-border p-3">
               <p className="text-sm font-medium">Accept Work</p>
               <div>
-                <p className="mb-1 text-xs text-muted-foreground">Quality Rating</p>
+                <Label className="mb-1">Quality Rating</Label>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button key={star} onClick={() => setAcceptRating(star)} className="p-0.5">
@@ -986,125 +1012,140 @@ export default function PpmWorkOrderDetailPage() {
                   ))}
                 </div>
               </div>
-              <textarea
-                placeholder="Notes (optional)..."
-                value={acceptNotes}
-                onChange={(e) => setAcceptNotes(e.target.value)}
-                rows={2}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-              />
+              <div className="space-y-1.5">
+                <Label htmlFor="acceptNotes">Notes</Label>
+                <Textarea
+                  id="acceptNotes"
+                  placeholder="Notes (optional)..."
+                  value={acceptNotes}
+                  onChange={(e) => setAcceptNotes(e.target.value)}
+                  rows={2}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700"
                   onClick={() => acceptWorkMutation.mutate({ quality_rating: acceptRating, notes: acceptNotes || undefined })}
                   disabled={acceptWorkMutation.isPending}
-                  className="flex-1 rounded-lg bg-green-600 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {acceptWorkMutation.isPending ? 'Accepting...' : 'Confirm Accept'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowAcceptForm(false)}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
 
           {/* Require Rework Form */}
           {showReworkForm && (
-            <div className="space-y-3 rounded-lg border border-orange-200 bg-orange-50 p-3">
-              <p className="text-sm font-medium text-orange-700">Require Rework</p>
-              <textarea
-                placeholder="Reason for rework..."
-                value={reworkReason}
-                onChange={(e) => setReworkReason(e.target.value)}
-                rows={2}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 resize-none"
-              />
+            <div className="space-y-3 rounded-lg border border-orange-200 bg-orange-50 dark:bg-orange-950 p-3">
+              <p className="text-sm font-medium text-orange-700 dark:text-orange-400">Require Rework</p>
+              <div className="space-y-1.5">
+                <Label htmlFor="reworkReason">Reason for rework</Label>
+                <Textarea
+                  id="reworkReason"
+                  placeholder="Reason for rework..."
+                  value={reworkReason}
+                  onChange={(e) => setReworkReason(e.target.value)}
+                  rows={2}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  className="flex-1 bg-orange-500 hover:bg-orange-600"
                   onClick={() => requireReworkMutation.mutate(reworkReason)}
                   disabled={requireReworkMutation.isPending || !reworkReason}
-                  className="flex-1 rounded-lg bg-orange-500 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {requireReworkMutation.isPending ? 'Submitting...' : 'Confirm Rework'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowReworkForm(false)}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
 
           {/* Reject Form */}
           {showRejectForm && (
-            <div className="space-y-3 rounded-lg border border-red-200 bg-red-50 p-3">
-              <p className="text-sm font-medium text-red-700">Reject Work Order</p>
-              <textarea
-                placeholder="Reason for rejection..."
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                rows={2}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 resize-none"
-              />
+            <div className="space-y-3 rounded-lg border border-destructive bg-destructive/10 p-3">
+              <p className="text-sm font-medium text-destructive">Reject Work Order</p>
+              <div className="space-y-1.5">
+                <Label htmlFor="rejectReason">Reason for rejection</Label>
+                <Textarea
+                  id="rejectReason"
+                  placeholder="Reason for rejection..."
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  rows={2}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  variant="destructive"
+                  className="flex-1"
                   onClick={() => rejectMutation.mutate(rejectReason)}
                   disabled={rejectMutation.isPending || !rejectReason}
-                  className="flex-1 rounded-lg bg-red-500 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {rejectMutation.isPending ? 'Rejecting...' : 'Confirm Reject'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowRejectForm(false)}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
 
           {/* Cancel Action */}
           {canCancel && !showCancelForm && (
-            <button
+            <Button
+              variant="outline"
+              className="w-full border-destructive text-destructive hover:bg-destructive/10"
               onClick={() => setShowCancelForm(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-300 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
             >
               <XCircle className="h-4 w-4" />
               Cancel Work Order
-            </button>
+            </Button>
           )}
 
           {/* Cancel Form */}
           {showCancelForm && (
-            <div className="space-y-3 rounded-lg border border-red-200 bg-red-50 p-3">
-              <p className="text-sm font-medium text-red-700">Cancel Work Order</p>
-              <textarea
-                placeholder="Reason for cancellation..."
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                rows={2}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 resize-none"
-              />
+            <div className="space-y-3 rounded-lg border border-destructive bg-destructive/10 p-3">
+              <p className="text-sm font-medium text-destructive">Cancel Work Order</p>
+              <div className="space-y-1.5">
+                <Label htmlFor="cancelReason">Reason for cancellation</Label>
+                <Textarea
+                  id="cancelReason"
+                  placeholder="Reason for cancellation..."
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  rows={2}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  variant="destructive"
+                  className="flex-1"
                   onClick={() => cancelMutation.mutate(cancelReason)}
                   disabled={cancelMutation.isPending || !cancelReason}
-                  className="flex-1 rounded-lg bg-red-500 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {cancelMutation.isPending ? 'Cancelling...' : 'Confirm Cancel'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowCancelForm(false)}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Back
-                </button>
+                </Button>
               </div>
             </div>
           )}

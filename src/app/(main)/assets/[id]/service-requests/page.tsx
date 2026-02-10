@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { PageLoading } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
 import { Wrench, Plus, MapPin, Calendar } from 'lucide-react';
 import { ServiceRequest } from '@/types/work-order';
 import { formatDate } from '@/lib/utils';
@@ -44,16 +45,17 @@ export default function AssetServiceRequestsPage() {
         showBack
         backHref={`/assets/${id}`}
         actions={
-          <button
+          <Button
+            size="icon"
             onClick={() =>
               router.push(
                 `/service-requests/new?asset_id=${id}&asset_name=${encodeURIComponent(asset?.asset_name || '')}`
               )
             }
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white"
+            className="h-9 w-9 rounded-lg"
           >
             <Plus className="h-5 w-5" />
-          </button>
+          </Button>
         }
       />
 
@@ -67,16 +69,15 @@ export default function AssetServiceRequestsPage() {
               title="No service requests"
               description="No service requests have been created for this asset"
               action={
-                <button
+                <Button
                   onClick={() =>
                     router.push(
                       `/service-requests/new?asset_id=${id}&asset_name=${encodeURIComponent(asset?.asset_name || '')}`
                     )
                   }
-                  className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white"
                 >
                   Create Service Request
-                </button>
+                </Button>
               }
             />
           ) : (
@@ -85,7 +86,7 @@ export default function AssetServiceRequestsPage() {
                 <button
                   key={sr.id}
                   onClick={() => router.push(`/service-requests/${sr.id}`)}
-                  className="flex w-full items-start gap-3 rounded-xl border border-border bg-white p-4 text-left transition-colors hover:bg-muted/50"
+                  className="flex w-full items-start gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:bg-muted/50"
                 >
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
                     <Wrench className="h-5 w-5 text-muted-foreground" />

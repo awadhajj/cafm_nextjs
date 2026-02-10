@@ -10,6 +10,11 @@ import { Save, Loader2 } from 'lucide-react';
 import { locationsApi } from '@/lib/api/locations';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageLoading } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 
 const locationSchema = z.object({
@@ -97,69 +102,51 @@ export default function NewPropertyPage() {
         <div className="space-y-5 px-4 py-4">
           {/* Name */}
           <div>
-            <label
-              htmlFor="name"
-              className="mb-1.5 block text-sm font-medium"
-            >
-              Name <span className="text-red-500">*</span>
-            </label>
-            <input
+            <Label htmlFor="name" className="mb-1.5">
+              Name <span className="text-destructive">*</span>
+            </Label>
+            <Input
               id="name"
               type="text"
               placeholder="e.g. Main Building"
               {...register('name')}
-              className={cn(
-                'w-full rounded-lg border bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-1',
-                errors.name
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                  : 'border-border focus:border-primary focus:ring-primary'
-              )}
+              aria-invalid={!!errors.name}
             />
             {errors.name && (
-              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
             )}
           </div>
 
           {/* Code */}
           <div>
-            <label
-              htmlFor="code"
-              className="mb-1.5 block text-sm font-medium"
-            >
-              Code <span className="text-red-500">*</span>
-            </label>
-            <input
+            <Label htmlFor="code" className="mb-1.5">
+              Code <span className="text-destructive">*</span>
+            </Label>
+            <Input
               id="code"
               type="text"
               placeholder="e.g. BLDG-001"
+              className="font-mono"
               {...register('code')}
-              className={cn(
-                'w-full rounded-lg border bg-white px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-1',
-                errors.code
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                  : 'border-border focus:border-primary focus:ring-primary'
-              )}
+              aria-invalid={!!errors.code}
             />
             {errors.code && (
-              <p className="mt-1 text-xs text-red-500">{errors.code.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.code.message}</p>
             )}
           </div>
 
           {/* Location Type */}
           <div>
-            <label
-              htmlFor="type"
-              className="mb-1.5 block text-sm font-medium"
-            >
-              Location Type <span className="text-red-500">*</span>
-            </label>
+            <Label htmlFor="type" className="mb-1.5">
+              Location Type <span className="text-destructive">*</span>
+            </Label>
             <select
               id="type"
               {...register('type')}
               className={cn(
-                'w-full rounded-lg border bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-1',
+                'w-full rounded-lg border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1',
                 errors.type
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                  ? 'border-destructive focus:border-destructive focus:ring-destructive'
                   : 'border-border focus:border-primary focus:ring-primary'
               )}
             >
@@ -171,7 +158,7 @@ export default function NewPropertyPage() {
               ))}
             </select>
             {errors.type && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-destructive">
                 {errors.type.message}
               </p>
             )}
@@ -179,19 +166,16 @@ export default function NewPropertyPage() {
 
           {/* Status */}
           <div>
-            <label
-              htmlFor="status"
-              className="mb-1.5 block text-sm font-medium"
-            >
-              Status <span className="text-red-500">*</span>
-            </label>
+            <Label htmlFor="status" className="mb-1.5">
+              Status <span className="text-destructive">*</span>
+            </Label>
             <select
               id="status"
               {...register('status')}
               className={cn(
-                'w-full rounded-lg border bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-1',
+                'w-full rounded-lg border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1',
                 errors.status
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                  ? 'border-destructive focus:border-destructive focus:ring-destructive'
                   : 'border-border focus:border-primary focus:ring-primary'
               )}
             >
@@ -202,7 +186,7 @@ export default function NewPropertyPage() {
               ))}
             </select>
             {errors.status && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-destructive">
                 {errors.status.message}
               </p>
             )}
@@ -210,12 +194,9 @@ export default function NewPropertyPage() {
 
           {/* Parent Location */}
           <div>
-            <label
-              htmlFor="parent_location_id"
-              className="mb-1.5 block text-sm font-medium"
-            >
+            <Label htmlFor="parent_location_id" className="mb-1.5">
               Parent Location
-            </label>
+            </Label>
             {isLoadingLocations ? (
               <div className="flex h-10 items-center rounded-lg border border-border px-3">
                 <span className="text-sm text-muted-foreground">
@@ -226,7 +207,7 @@ export default function NewPropertyPage() {
               <select
                 id="parent_location_id"
                 {...register('parent_location_id')}
-                className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="">None (Top Level)</option>
                 {parentLocations.map((loc) => (
@@ -240,35 +221,34 @@ export default function NewPropertyPage() {
 
           {/* Description */}
           <div>
-            <label
-              htmlFor="description"
-              className="mb-1.5 block text-sm font-medium"
-            >
+            <Label htmlFor="description" className="mb-1.5">
               Description
-            </label>
-            <textarea
+            </Label>
+            <Textarea
               id="description"
               rows={4}
               placeholder="Optional description..."
+              className="resize-none"
               {...register('description')}
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
             />
           </div>
 
           {/* Error Message */}
           {createMutation.isError && (
-            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-              Failed to create location. Please check your input and try again.
-            </div>
+            <Alert variant="destructive">
+              <AlertDescription>
+                Failed to create location. Please check your input and try again.
+              </AlertDescription>
+            </Alert>
           )}
         </div>
 
         {/* Submit Button */}
-        <div className="sticky bottom-0 border-t border-border bg-white px-4 py-3 safe-bottom">
-          <button
+        <div className="sticky bottom-0 border-t border-border bg-background px-4 py-3 safe-bottom">
+          <Button
             type="submit"
             disabled={createMutation.isPending}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-white disabled:opacity-50"
+            className="w-full py-3 h-auto"
           >
             {createMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -276,7 +256,7 @@ export default function NewPropertyPage() {
               <Save className="h-4 w-4" />
             )}
             {createMutation.isPending ? 'Creating...' : 'Create Location'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

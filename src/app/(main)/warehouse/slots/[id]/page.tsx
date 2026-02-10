@@ -5,6 +5,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { warehouseApi } from '@/lib/api/warehouse';
 import { PageHeader } from '@/components/ui/page-header';
+import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageLoading } from '@/components/ui/loading-spinner';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
@@ -81,12 +82,11 @@ export default function SlotDetailPage() {
           title="Slot not found"
           description="The requested slot could not be found. A store_id query parameter may be required."
           action={
-            <button
+            <Button
               onClick={() => router.push('/warehouse')}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
             >
               Back to Warehouse
-            </button>
+            </Button>
           }
         />
       </div>
@@ -102,12 +102,13 @@ export default function SlotDetailPage() {
         backHref={storeId ? `/warehouse?store=${storeId}` : '/warehouse'}
         actions={
           hasPermission('warehouse.slots.update') ? (
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => router.push(`/warehouse/slots/${slotId}/edit?store_id=${storeId}`)}
-              className="rounded-lg p-2 hover:bg-muted"
             >
               <Edit className="h-4 w-4" />
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -115,7 +116,7 @@ export default function SlotDetailPage() {
       <PullToRefresh onRefresh={handleRefresh} className="flex-1">
         {/* Slot Info Card */}
         <div className="space-y-4 p-4">
-          <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
             <div className="flex items-start gap-3">
               <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50">
                 <Warehouse className="h-6 w-6 text-blue-600" />
@@ -169,7 +170,7 @@ export default function SlotDetailPage() {
             <h3 className="mb-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Slot Contents
             </h3>
-            <div className="rounded-xl border border-border bg-white shadow-sm">
+            <div className="rounded-xl border border-border bg-card shadow-sm">
               <SlotContents storeId={storeId} slotId={slotId} />
             </div>
           </div>

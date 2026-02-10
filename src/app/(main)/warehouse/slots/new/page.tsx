@@ -9,9 +9,14 @@ import { z } from 'zod';
 import { warehouseApi } from '@/lib/api/warehouse';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageLoading } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/providers/auth-provider';
 import { Store } from '@/types/warehouse';
-import { Warehouse, ChevronDown } from 'lucide-react';
+import { Warehouse, ChevronDown, AlertCircle } from 'lucide-react';
 
 const createSlotSchema = z.object({
   slot_number: z.string().min(1, 'Slot number is required'),
@@ -113,23 +118,24 @@ export default function CreateSlotPage() {
       <div className="flex-1 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
           {submitError && (
-            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-              {submitError}
-            </div>
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{submitError}</AlertDescription>
+            </Alert>
           )}
 
           {/* Store Selector */}
           {!storeIdParam && (
             <div>
-              <label htmlFor="store_id" className="mb-1 block text-sm font-medium">
-                Store <span className="text-red-500">*</span>
-              </label>
+              <Label htmlFor="store_id" className="mb-1">
+                Store <span className="text-destructive">*</span>
+              </Label>
               <div className="relative">
                 <select
                   id="store_id"
                   value={selectedStoreId}
                   onChange={(e) => setSelectedStoreId(e.target.value)}
-                  className="w-full appearance-none rounded-lg border border-border bg-white px-3 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   <option value="">Select a store...</option>
                   {stores.map((store: Store) => (
@@ -154,60 +160,58 @@ export default function CreateSlotPage() {
 
           {/* Slot Number */}
           <div>
-            <label htmlFor="slot_number" className="mb-1 block text-sm font-medium">
-              Slot Number <span className="text-red-500">*</span>
-            </label>
-            <input
+            <Label htmlFor="slot_number" className="mb-1">
+              Slot Number <span className="text-destructive">*</span>
+            </Label>
+            <Input
               id="slot_number"
               type="text"
               {...register('slot_number')}
               placeholder="e.g., A-01"
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             {errors.slot_number && (
-              <p className="mt-1 text-xs text-red-500">{errors.slot_number.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.slot_number.message}</p>
             )}
           </div>
 
           {/* Name */}
           <div>
-            <label htmlFor="name" className="mb-1 block text-sm font-medium">
-              Name <span className="text-red-500">*</span>
-            </label>
-            <input
+            <Label htmlFor="name" className="mb-1">
+              Name <span className="text-destructive">*</span>
+            </Label>
+            <Input
               id="name"
               type="text"
               {...register('name')}
               placeholder="e.g., Shelf A Row 1"
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             {errors.name && (
-              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="mb-1 block text-sm font-medium">
+            <Label htmlFor="description" className="mb-1">
               Description
-            </label>
-            <textarea
+            </Label>
+            <Textarea
               id="description"
               {...register('description')}
               rows={3}
               placeholder="Optional description of this slot..."
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+              className="resize-none"
             />
           </div>
 
           {/* Submit */}
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting || createMutation.isPending}
-            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
+            className="w-full"
           >
             {createMutation.isPending ? 'Creating...' : 'Create Slot'}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

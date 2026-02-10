@@ -58,7 +58,7 @@ export default function ServiceRequestDetailPage() {
 
       <div className="flex-1 overflow-y-auto">
         {/* Status and Priority */}
-        <div className="border-b border-border bg-white px-4 py-3">
+        <div className="border-b border-border bg-card px-4 py-3">
           <div className="flex items-center gap-2">
             <StatusBadge status={sr.status} />
             {sr.priority && <StatusBadge status={sr.priority} />}
@@ -66,7 +66,7 @@ export default function ServiceRequestDetailPage() {
         </div>
 
         {/* SR Details */}
-        <div className="border-b border-border bg-white px-4 py-4">
+        <div className="border-b border-border bg-card px-4 py-4">
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             Details
           </h2>
@@ -151,7 +151,7 @@ export default function ServiceRequestDetailPage() {
 
         {/* Images */}
         {sr.images && sr.images.length > 0 && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               <div className="flex items-center gap-2">
                 <ImageIcon className="h-4 w-4" />
@@ -179,7 +179,7 @@ export default function ServiceRequestDetailPage() {
         )}
 
         {/* Linked Work Orders - navigational section */}
-        <div className="border-b border-border bg-white px-4 py-4">
+        <div className="border-b border-border bg-card px-4 py-4">
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             <div className="flex items-center gap-2">
               <Wrench className="h-4 w-4" />

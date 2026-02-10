@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { warehouseApi } from '@/lib/api/warehouse';
 import { PageHeader } from '@/components/ui/page-header';
+import { Button } from '@/components/ui/button';
 import { SearchBar } from '@/components/ui/search-bar';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageLoading } from '@/components/ui/loading-spinner';
@@ -77,23 +78,25 @@ export default function ItemsListPage() {
         backHref="/warehouse"
         actions={
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setShowFilters(!showFilters)}
-              className={`relative rounded-lg p-2 hover:bg-muted ${hasActiveFilters ? 'text-primary' : ''}`}
+              className={`relative ${hasActiveFilters ? 'text-primary' : ''}`}
             >
               <Filter className="h-4 w-4" />
               {hasActiveFilters && (
                 <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-primary" />
               )}
-            </button>
+            </Button>
             {hasPermission('warehouse.items.create') && (
-              <button
+              <Button
                 onClick={() => router.push('/warehouse/items/new')}
-                className="flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
+                size="sm"
               >
                 <Plus className="h-4 w-4" />
                 New
-              </button>
+              </Button>
             )}
           </div>
         }
@@ -124,7 +127,7 @@ export default function ItemsListPage() {
               className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 !categoryFilter
                   ? 'bg-primary text-primary-foreground'
-                  : 'bg-white border border-border text-muted-foreground'
+                  : 'bg-card border border-border text-muted-foreground'
               }`}
             >
               All Categories
@@ -136,7 +139,7 @@ export default function ItemsListPage() {
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                   categoryFilter === cat.id
                     ? 'bg-primary text-primary-foreground'
-                    : 'bg-white border border-border text-muted-foreground'
+                    : 'bg-card border border-border text-muted-foreground'
                 }`}
               >
                 {cat.label}
@@ -161,12 +164,11 @@ export default function ItemsListPage() {
               }
               action={
                 hasPermission('warehouse.items.create') ? (
-                  <button
+                  <Button
                     onClick={() => router.push('/warehouse/items/new')}
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
                   >
                     Add First Item
-                  </button>
+                  </Button>
                 ) : undefined
               }
             />

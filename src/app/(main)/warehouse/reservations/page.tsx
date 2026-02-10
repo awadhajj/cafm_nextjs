@@ -5,7 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { reservationsApi } from '@/lib/api/reservations';
 import { PageHeader } from '@/components/ui/page-header';
-import { Tabs } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { SearchBar } from '@/components/ui/search-bar';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -59,11 +60,6 @@ export default function ReservationsListPage() {
     setSearch(query);
   }, []);
 
-  const tabs = STATUS_TABS.map((tab) => ({
-    ...tab,
-    count: tab.key === 'all' ? reservationsData?.pagination?.total : undefined,
-  }));
-
   return (
     <div className="flex h-full flex-col">
       <PageHeader
@@ -72,18 +68,29 @@ export default function ReservationsListPage() {
         backHref="/warehouse"
         actions={
           hasPermission('warehouse.reservations.create') ? (
-            <button
+            <Button
               onClick={() => router.push('/warehouse/reservations/new')}
-              className="flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
+              size="sm"
             >
               <Plus className="h-4 w-4" />
               New
-            </button>
+            </Button>
           ) : undefined
         }
       />
 
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="w-full">
+          {STATUS_TABS.map((tab) => (
+            <TabsTrigger key={tab.key} value={tab.key}>
+              {tab.label}
+              {tab.key === 'all' && reservationsData?.pagination?.total !== undefined && (
+                <span className="ml-1 text-xs text-muted-foreground">({reservationsData.pagination.total})</span>
+              )}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       <div className="px-4 py-3">
         <SearchBar

@@ -9,7 +9,13 @@ import { z } from 'zod';
 import { assetsApi } from '@/lib/api/assets';
 import { locationsApi } from '@/lib/api/locations';
 import { PageHeader } from '@/components/ui/page-header';
-import { PageLoading, LoadingSpinner } from '@/components/ui/loading-spinner';
+import { PageLoading } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2 } from 'lucide-react';
 
 const assetSchema = z.object({
   asset_name: z.string().min(1, 'Asset name is required'),
@@ -126,57 +132,54 @@ export default function EditAssetPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto">
         <div className="space-y-4 px-4 py-4">
           {serverError && (
-            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-              {serverError}
-            </div>
+            <Alert variant="destructive">
+              <AlertDescription>{serverError}</AlertDescription>
+            </Alert>
           )}
 
           {/* Asset Name */}
           <div>
-            <label className="mb-1 block text-sm font-medium">
-              Asset Name <span className="text-red-500">*</span>
-            </label>
-            <input
+            <Label className="mb-1">
+              Asset Name <span className="text-destructive">*</span>
+            </Label>
+            <Input
               {...register('asset_name')}
               type="text"
               placeholder="Enter asset name"
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             {errors.asset_name && (
-              <p className="mt-1 text-xs text-red-500">{errors.asset_name.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.asset_name.message}</p>
             )}
           </div>
 
           {/* Serial Number */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Serial Number</label>
-            <input
+            <Label className="mb-1">Serial Number</Label>
+            <Input
               {...register('serial_number')}
               type="text"
               placeholder="Enter serial number"
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Barcode */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Barcode</label>
-            <input
+            <Label className="mb-1">Barcode</Label>
+            <Input
               {...register('barcode')}
               type="text"
               placeholder="Enter barcode"
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Status */}
           <div>
-            <label className="mb-1 block text-sm font-medium">
-              Status <span className="text-red-500">*</span>
-            </label>
+            <Label className="mb-1">
+              Status <span className="text-destructive">*</span>
+            </Label>
             <select
               {...register('status')}
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             >
               {STATUS_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -185,16 +188,16 @@ export default function EditAssetPage() {
               ))}
             </select>
             {errors.status && (
-              <p className="mt-1 text-xs text-red-500">{errors.status.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.status.message}</p>
             )}
           </div>
 
           {/* Location */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Location</label>
+            <Label className="mb-1">Location</Label>
             <select
               {...register('location_id')}
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="">Select a location</option>
               {locations.map((loc) => (
@@ -207,54 +210,52 @@ export default function EditAssetPage() {
 
           {/* Manufacturer */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Manufacturer</label>
-            <input
+            <Label className="mb-1">Manufacturer</Label>
+            <Input
               {...register('manufacturer')}
               type="text"
               placeholder="Enter manufacturer"
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Model */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Model</label>
-            <input
+            <Label className="mb-1">Model</Label>
+            <Input
               {...register('model')}
               type="text"
               placeholder="Enter model"
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Description</label>
-            <textarea
+            <Label className="mb-1">Description</Label>
+            <Textarea
               {...register('description')}
               rows={3}
               placeholder="Enter description"
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
         </div>
 
         {/* Submit Button */}
-        <div className="sticky bottom-0 border-t border-border bg-white px-4 py-3 safe-bottom">
-          <button
+        <div className="sticky bottom-0 border-t border-border bg-background px-4 py-3 safe-bottom">
+          <Button
             type="submit"
             disabled={updateMutation.isPending || !isDirty}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+            className="w-full py-3 text-sm font-semibold"
+            size="lg"
           >
             {updateMutation.isPending ? (
               <>
-                <LoadingSpinner size="sm" />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 Saving...
               </>
             ) : (
               'Save Changes'
             )}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

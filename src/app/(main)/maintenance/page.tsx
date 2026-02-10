@@ -7,7 +7,7 @@ import { workOrdersApi } from '@/lib/api/work-orders';
 import { serviceRequestsApi } from '@/lib/api/service-requests';
 import { ppmApi } from '@/lib/api/ppm';
 import { PageHeader } from '@/components/ui/page-header';
-import { Tabs } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { SearchBar } from '@/components/ui/search-bar';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -92,12 +92,6 @@ export default function MaintenancePage() {
   const serviceRequests = srData?.data || [];
   const ppmWorkOrders = ppmData?.data || [];
 
-  const tabs = [
-    { key: 'work_orders', label: 'Work Orders', count: woData?.pagination?.total },
-    { key: 'service_requests', label: 'Service Requests', count: srData?.pagination?.total },
-    { key: 'ppm', label: 'PPM', count: ppmData?.pagination?.total },
-  ];
-
   const isLoading =
     (activeTab === 'work_orders' && woLoading) ||
     (activeTab === 'service_requests' && srLoading) ||
@@ -109,46 +103,65 @@ export default function MaintenancePage() {
     <div className="flex h-full flex-col">
       <PageHeader title="Maintenance" />
 
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="flex h-full flex-col">
+        <TabsList className="w-full">
+          <TabsTrigger value="work_orders">
+            Work Orders
+            {woData?.pagination?.total != null && (
+              <span className="ml-1 text-xs text-muted-foreground">({woData.pagination.total})</span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="service_requests">
+            Service Requests
+            {srData?.pagination?.total != null && (
+              <span className="ml-1 text-xs text-muted-foreground">({srData.pagination.total})</span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="ppm">
+            PPM
+            {ppmData?.pagination?.total != null && (
+              <span className="ml-1 text-xs text-muted-foreground">({ppmData.pagination.total})</span>
+            )}
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Search and Filter Bar */}
-      <div className="space-y-3 border-b border-border bg-white px-4 py-3">
-        <SearchBar
-          onSearch={handleSearch}
-          placeholder={
-            activeTab === 'work_orders'
-              ? 'Search work orders...'
-              : activeTab === 'service_requests'
-              ? 'Search service requests...'
-              : 'Search PPM work orders...'
-          }
-        />
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {statusOptions.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => setStatusFilter(opt.value)}
-              className={cn(
-                'flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                statusFilter === opt.value
-                  ? 'bg-primary text-white'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
+        {/* Search and Filter Bar */}
+        <div className="space-y-3 border-b border-border bg-background px-4 py-3">
+          <SearchBar
+            onSearch={handleSearch}
+            placeholder={
+              activeTab === 'work_orders'
+                ? 'Search work orders...'
+                : activeTab === 'service_requests'
+                ? 'Search service requests...'
+                : 'Search PPM work orders...'
+            }
+          />
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {statusOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setStatusFilter(opt.value)}
+                className={cn(
+                  'flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                  statusFilter === opt.value
+                    ? 'bg-primary text-white'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Content */}
-      {isLoading ? (
-        <PageLoading />
-      ) : (
-        <div className="flex-1 overflow-y-auto">
-          {/* Work Orders Tab */}
-          {activeTab === 'work_orders' && (
-            <>
+        {/* Content */}
+        {isLoading ? (
+          <PageLoading />
+        ) : (
+          <>
+            {/* Work Orders Tab */}
+            <TabsContent value="work_orders" className="flex-1 overflow-y-auto">
               {workOrders.length === 0 ? (
                 <EmptyState
                   icon={Wrench}
@@ -187,12 +200,10 @@ export default function MaintenancePage() {
                   ))}
                 </div>
               )}
-            </>
-          )}
+            </TabsContent>
 
-          {/* Service Requests Tab */}
-          {activeTab === 'service_requests' && (
-            <>
+            {/* Service Requests Tab */}
+            <TabsContent value="service_requests" className="flex-1 overflow-y-auto">
               {serviceRequests.length === 0 ? (
                 <EmptyState
                   icon={ClipboardList}
@@ -226,12 +237,10 @@ export default function MaintenancePage() {
                   ))}
                 </div>
               )}
-            </>
-          )}
+            </TabsContent>
 
-          {/* PPM Tab */}
-          {activeTab === 'ppm' && (
-            <>
+            {/* PPM Tab */}
+            <TabsContent value="ppm" className="flex-1 overflow-y-auto">
               {ppmWorkOrders.length === 0 ? (
                 <EmptyState
                   icon={Calendar}
@@ -270,10 +279,10 @@ export default function MaintenancePage() {
                   ))}
                 </div>
               )}
-            </>
-          )}
-        </div>
-      )}
+            </TabsContent>
+          </>
+        )}
+      </Tabs>
     </div>
   );
 }

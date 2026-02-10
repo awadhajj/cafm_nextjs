@@ -9,6 +9,10 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { PageLoading } from '@/components/ui/loading-spinner';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import {
   Wrench,
   User,
@@ -32,10 +36,10 @@ import { formatDateTime, cn } from '@/lib/utils';
 import { WorkOrder, TimeEntry } from '@/types/work-order';
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'text-red-600 bg-red-50',
-  high: 'text-orange-600 bg-orange-50',
-  medium: 'text-yellow-600 bg-yellow-50',
-  low: 'text-green-600 bg-green-50',
+  critical: 'text-red-600 bg-red-50 dark:bg-red-950',
+  high: 'text-orange-600 bg-orange-50 dark:bg-orange-950',
+  medium: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-950',
+  low: 'text-green-600 bg-green-50 dark:bg-green-950',
 };
 
 function formatElapsedTime(startedAt: string): string {
@@ -232,7 +236,7 @@ export default function WorkOrderDetailPage() {
 
       <div className="flex-1 overflow-y-auto pb-32">
         {/* Status Bar */}
-        <div className="border-b border-border bg-white px-4 py-3">
+        <div className="border-b border-border bg-card px-4 py-3">
           <div className="flex items-center gap-2 flex-wrap">
             <StatusBadge status={wo.status} />
             {wo.priority && (
@@ -246,7 +250,7 @@ export default function WorkOrderDetailPage() {
               </span>
             )}
             {wo.cancellation_requested && (
-              <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
+              <span className="inline-flex items-center rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive">
                 Cancellation Requested
               </span>
             )}
@@ -254,7 +258,7 @@ export default function WorkOrderDetailPage() {
         </div>
 
         {/* WO Info */}
-        <div className="border-b border-border bg-white px-4 py-4">
+        <div className="border-b border-border bg-card px-4 py-4">
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             Work Order Info
           </h2>
@@ -375,7 +379,7 @@ export default function WorkOrderDetailPage() {
 
         {/* Service Request Info */}
         {wo.serviceRequest && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Service Request
             </h2>
@@ -402,7 +406,7 @@ export default function WorkOrderDetailPage() {
 
         {/* Assigned Staff */}
         {wo.assignedStaff && wo.assignedStaff.length > 0 && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
@@ -437,7 +441,7 @@ export default function WorkOrderDetailPage() {
         )}
 
         {/* Timer and Time Entries */}
-        <div className="border-b border-border bg-white px-4 py-4">
+        <div className="border-b border-border bg-card px-4 py-4">
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             <div className="flex items-center gap-2">
               <Timer className="h-4 w-4" />
@@ -453,14 +457,14 @@ export default function WorkOrderDetailPage() {
                   <p className="text-xs font-medium text-primary">Timer Running</p>
                   <p className="text-2xl font-mono font-bold text-primary">{timerDisplay}</p>
                 </div>
-                <button
+                <Button
+                  variant="destructive"
                   onClick={() => stopTimerMutation.mutate(undefined)}
                   disabled={stopTimerMutation.isPending}
-                  className="flex items-center gap-1.5 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50"
                 >
                   <Square className="h-4 w-4" />
                   Stop
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -468,21 +472,22 @@ export default function WorkOrderDetailPage() {
           {/* Timer Controls */}
           {!timerStatus?.has_active_timer && (wo.status === 'in_progress' || wo.status === 'assigned') && (
             <div className="mb-3 flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                className="flex-1 border-primary text-primary hover:bg-primary/10"
                 onClick={() => startTimerMutation.mutate()}
                 disabled={startTimerMutation.isPending}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary/5 px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"
               >
                 <Play className="h-4 w-4" />
                 Start Timer
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => setShowLogTimeForm(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50"
               >
                 <Plus className="h-4 w-4" />
                 Log Time
-              </button>
+              </Button>
             </div>
           )}
 
@@ -490,36 +495,42 @@ export default function WorkOrderDetailPage() {
           {showLogTimeForm && (
             <div className="mb-3 rounded-lg border border-border p-3 space-y-3">
               <p className="text-sm font-medium">Log Time Manually</p>
-              <input
-                type="number"
-                step="0.25"
-                min="0.25"
-                placeholder="Hours (e.g., 1.5)"
-                value={logTimeHours}
-                onChange={(e) => setLogTimeHours(e.target.value)}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <input
-                type="text"
-                placeholder="Notes (optional)"
-                value={logTimeNotes}
-                onChange={(e) => setLogTimeNotes(e.target.value)}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+              <div className="space-y-1.5">
+                <Label htmlFor="logTimeHours">Hours</Label>
+                <Input
+                  id="logTimeHours"
+                  type="number"
+                  step="0.25"
+                  min="0.25"
+                  placeholder="Hours (e.g., 1.5)"
+                  value={logTimeHours}
+                  onChange={(e) => setLogTimeHours(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="logTimeNotes">Notes</Label>
+                <Input
+                  id="logTimeNotes"
+                  type="text"
+                  placeholder="Notes (optional)"
+                  value={logTimeNotes}
+                  onChange={(e) => setLogTimeNotes(e.target.value)}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  className="flex-1"
                   onClick={handleLogTime}
                   disabled={logTimeMutation.isPending || !logTimeHours}
-                  className="flex-1 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
                 >
                   Log Time
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowLogTimeForm(false)}
-                  className="rounded-lg border border-border px-3 py-2 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -557,7 +568,7 @@ export default function WorkOrderDetailPage() {
 
         {/* Reservations / Materials */}
         {reservations.length > 0 && (
-          <div className="border-b border-border bg-white px-4 py-4">
+          <div className="border-b border-border bg-card px-4 py-4">
             <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4" />
@@ -593,8 +604,8 @@ export default function WorkOrderDetailPage() {
 
         {/* Cancellation Info */}
         {wo.cancellation_requested && wo.cancellation_reason && (
-          <div className="border-b border-border bg-white px-4 py-4">
-            <h2 className="mb-3 text-sm font-semibold text-red-600 uppercase tracking-wider">
+          <div className="border-b border-border bg-card px-4 py-4">
+            <h2 className="mb-3 text-sm font-semibold text-destructive uppercase tracking-wider">
               <div className="flex items-center gap-2">
                 <XCircle className="h-4 w-4" />
                 Cancellation Request
@@ -606,76 +617,85 @@ export default function WorkOrderDetailPage() {
       </div>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-white px-4 py-3 safe-bottom">
+      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background px-4 py-3 safe-bottom">
         <div className="space-y-2">
           {/* Status-based actions */}
           {wo.status === 'assigned' && (
-            <button
+            <Button
+              className="w-full py-3"
+              size="lg"
               onClick={() => startMutation.mutate()}
               disabled={startMutation.isPending}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               <Play className="h-4 w-4" />
               {startMutation.isPending ? 'Starting...' : 'Start Work Order'}
-            </button>
+            </Button>
           )}
 
           {wo.status === 'in_progress' && !showCompleteForm && (
-            <button
+            <Button
+              className="w-full bg-green-600 py-3 hover:bg-green-700"
+              size="lg"
               onClick={() => setShowCompleteForm(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-green-700"
             >
               <CheckCircle className="h-4 w-4" />
               Complete Work Order
-            </button>
+            </Button>
           )}
 
           {/* Complete Form */}
           {wo.status === 'in_progress' && showCompleteForm && (
             <div className="space-y-3 rounded-lg border border-border p-3">
               <p className="text-sm font-medium">Complete Work Order</p>
-              <input
-                type="number"
-                step="0.25"
-                min="0.25"
-                placeholder="Actual hours worked"
-                value={completeHours}
-                onChange={(e) => setCompleteHours(e.target.value)}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <textarea
-                placeholder="Completion notes..."
-                value={completeNotes}
-                onChange={(e) => setCompleteNotes(e.target.value)}
-                rows={3}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-              />
+              <div className="space-y-1.5">
+                <Label htmlFor="completeHours">Actual hours worked</Label>
+                <Input
+                  id="completeHours"
+                  type="number"
+                  step="0.25"
+                  min="0.25"
+                  placeholder="Actual hours worked"
+                  value={completeHours}
+                  onChange={(e) => setCompleteHours(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="completeNotes">Completion notes</Label>
+                <Textarea
+                  id="completeNotes"
+                  placeholder="Completion notes..."
+                  value={completeNotes}
+                  onChange={(e) => setCompleteNotes(e.target.value)}
+                  rows={3}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700"
                   onClick={handleComplete}
                   disabled={completeMutation.isPending || !completeHours}
-                  className="flex-1 rounded-lg bg-green-600 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {completeMutation.isPending ? 'Submitting...' : 'Submit'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowCompleteForm(false)}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
 
           {wo.status === 'completed' && hasPermission('work-orders.verify') && !showVerifyForm && (
-            <button
+            <Button
+              className="w-full bg-purple-600 py-3 hover:bg-purple-700"
+              size="lg"
               onClick={() => setShowVerifyForm(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-purple-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-purple-700"
             >
               <ShieldCheck className="h-4 w-4" />
               Verify Work Order
-            </button>
+            </Button>
           )}
 
           {/* Verify Form */}
@@ -683,7 +703,7 @@ export default function WorkOrderDetailPage() {
             <div className="space-y-3 rounded-lg border border-border p-3">
               <p className="text-sm font-medium">Verify Work Order</p>
               <div>
-                <p className="mb-1 text-xs text-muted-foreground">Quality Rating</p>
+                <Label className="mb-1">Quality Rating</Label>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -703,34 +723,38 @@ export default function WorkOrderDetailPage() {
                   ))}
                 </div>
               </div>
-              <textarea
-                placeholder="Verification notes (optional)..."
-                value={verifyNotes}
-                onChange={(e) => setVerifyNotes(e.target.value)}
-                rows={2}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-              />
+              <div className="space-y-1.5">
+                <Label htmlFor="verifyNotes">Verification notes</Label>
+                <Textarea
+                  id="verifyNotes"
+                  placeholder="Verification notes (optional)..."
+                  value={verifyNotes}
+                  onChange={(e) => setVerifyNotes(e.target.value)}
+                  rows={2}
+                />
+              </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700"
                   onClick={() => handleVerify(true)}
                   disabled={verifyMutation.isPending}
-                  className="flex-1 rounded-lg bg-green-600 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   Approve
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="flex-1"
                   onClick={() => handleVerify(false)}
                   disabled={verifyMutation.isPending}
-                  className="flex-1 rounded-lg bg-red-500 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                 >
                   Reject
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowVerifyForm(false)}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -738,43 +762,46 @@ export default function WorkOrderDetailPage() {
           {/* Cancellation Actions */}
           {wo.cancellation_requested && hasPermission('work-orders.approve-cancellation') && (
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="destructive"
+                className="flex-1"
                 onClick={() => approveCancelMutation.mutate()}
                 disabled={approveCancelMutation.isPending}
-                className="flex-1 rounded-lg bg-red-500 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
               >
                 Approve Cancellation
-              </button>
+              </Button>
               {!showRejectCancelForm ? (
-                <button
+                <Button
+                  variant="outline"
+                  className="flex-1"
                   onClick={() => setShowRejectCancelForm(true)}
-                  className="flex-1 rounded-lg border border-border px-3 py-2.5 text-sm font-medium"
                 >
                   Reject Cancellation
-                </button>
+                </Button>
               ) : (
                 <div className="flex-1 space-y-2">
-                  <input
+                  <Input
                     type="text"
                     placeholder="Rejection reason"
                     value={rejectCancelReason}
                     onChange={(e) => setRejectCancelReason(e.target.value)}
-                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                   <div className="flex gap-2">
-                    <button
+                    <Button
+                      size="sm"
+                      className="flex-1"
                       onClick={() => rejectCancelMutation.mutate(rejectCancelReason)}
                       disabled={rejectCancelMutation.isPending || !rejectCancelReason}
-                      className="flex-1 rounded-lg bg-primary px-2 py-1.5 text-xs font-medium text-white disabled:opacity-50"
                     >
                       Confirm
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => setShowRejectCancelForm(false)}
-                      className="rounded-lg border border-border px-2 py-1.5 text-xs font-medium"
                     >
                       Back
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -786,37 +813,38 @@ export default function WorkOrderDetailPage() {
             (wo.status === 'assigned' || wo.status === 'in_progress') && (
               <>
                 {!showCancelForm ? (
-                  <button
+                  <Button
+                    variant="outline"
+                    className="w-full border-destructive text-destructive hover:bg-destructive/10"
                     onClick={() => setShowCancelForm(true)}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-300 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                   >
                     <XCircle className="h-4 w-4" />
                     Request Cancellation
-                  </button>
+                  </Button>
                 ) : (
-                  <div className="space-y-2 rounded-lg border border-red-200 bg-red-50 p-3">
-                    <p className="text-sm font-medium text-red-700">Request Cancellation</p>
-                    <textarea
+                  <div className="space-y-2 rounded-lg border border-destructive bg-destructive/10 p-3">
+                    <p className="text-sm font-medium text-destructive">Request Cancellation</p>
+                    <Textarea
                       placeholder="Reason for cancellation..."
                       value={cancelReason}
                       onChange={(e) => setCancelReason(e.target.value)}
                       rows={2}
-                      className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 resize-none"
                     />
                     <div className="flex gap-2">
-                      <button
+                      <Button
+                        variant="destructive"
+                        className="flex-1"
                         onClick={() => requestCancelMutation.mutate(cancelReason)}
                         disabled={requestCancelMutation.isPending || !cancelReason}
-                        className="flex-1 rounded-lg bg-red-500 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
                       >
                         Submit Request
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="outline"
                         onClick={() => setShowCancelForm(false)}
-                        className="rounded-lg border border-border px-3 py-2 text-sm font-medium"
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}

@@ -5,6 +5,11 @@ import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reservationsApi } from '@/lib/api/reservations';
 import { PageHeader } from '@/components/ui/page-header';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageLoading } from '@/components/ui/loading-spinner';
@@ -188,12 +193,11 @@ export default function ReservationDetailPage() {
           title="Reservation not found"
           description="The requested reservation could not be found."
           action={
-            <button
+            <Button
               onClick={() => router.push('/warehouse/reservations')}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
             >
               Back to Reservations
-            </button>
+            </Button>
           }
         />
       </div>
@@ -220,31 +224,33 @@ export default function ReservationDetailPage() {
         <div className="space-y-4 p-4">
           {/* Error Banner */}
           {actionError && (
-            <div className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3">
-              <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
-              <span className="text-sm text-red-600">{actionError}</span>
-              <button
-                onClick={() => setActionError('')}
-                className="ml-auto"
-              >
-                <X className="h-4 w-4 text-red-400" />
-              </button>
-            </div>
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="flex items-center justify-between">
+                <span>{actionError}</span>
+                <button
+                  onClick={() => setActionError('')}
+                  className="ml-2 flex-shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </AlertDescription>
+            </Alert>
           )}
 
           {/* Rejection Reason */}
           {reservation.rejection_reason && (
-            <div className="flex items-start gap-2 rounded-lg bg-red-50 px-4 py-3">
-              <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+            <div className="flex items-start gap-2 rounded-lg bg-destructive/10 px-4 py-3">
+              <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium text-red-700">Rejected</p>
-                <p className="text-sm text-red-600">{reservation.rejection_reason}</p>
+                <p className="text-sm font-medium text-destructive">Rejected</p>
+                <p className="text-sm text-destructive">{reservation.rejection_reason}</p>
               </div>
             </div>
           )}
 
           {/* Reservation Info Card */}
-          <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
             <div className="flex items-start gap-3">
               <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-purple-50">
                 <ClipboardList className="h-6 w-6 text-purple-600" />
@@ -338,7 +344,7 @@ export default function ReservationDetailPage() {
             <h3 className="mb-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Materials ({reservation.items?.length || 0})
             </h3>
-            <div className="rounded-xl border border-border bg-white shadow-sm divide-y divide-border">
+            <div className="rounded-xl border border-border bg-card shadow-sm divide-y divide-border">
               {reservation.items && reservation.items.length > 0 ? (
                 reservation.items.map((ri: ReservationItem) => (
                   <div key={ri.id} className="px-4 py-3">
@@ -377,10 +383,10 @@ export default function ReservationDetailPage() {
                     {/* Issue Quantity Input - shown when issuing */}
                     {showIssuePanel && (
                       <div className="mt-2 ml-12 flex items-center gap-2">
-                        <label className="text-xs text-muted-foreground whitespace-nowrap">
+                        <Label className="text-xs text-muted-foreground whitespace-nowrap">
                           Issue qty:
-                        </label>
-                        <input
+                        </Label>
+                        <Input
                           type="number"
                           min="0"
                           max={ri.requested_quantity - ri.issued_quantity}
@@ -391,7 +397,7 @@ export default function ReservationDetailPage() {
                               [ri.id]: parseInt(e.target.value) || 0,
                             }))
                           }
-                          className="w-20 rounded-lg border border-border px-2 py-1 text-sm text-center focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                          className="w-20 text-center"
                         />
                         <span className="text-xs text-muted-foreground">
                           / {ri.requested_quantity - ri.issued_quantity} remaining
@@ -415,13 +421,13 @@ export default function ReservationDetailPage() {
               <h3 className="mb-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                 Receiver Signature
               </h3>
-              <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
+              <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
                 {signatureData ? (
                   <div className="space-y-2">
                     <img
                       src={signatureData}
                       alt="Signature"
-                      className="h-32 w-full rounded-lg border border-border object-contain bg-white"
+                      className="h-32 w-full rounded-lg border border-border object-contain bg-card"
                     />
                     <p className="text-xs text-green-600 text-center">Signature captured</p>
                   </div>
@@ -459,57 +465,59 @@ export default function ReservationDetailPage() {
               {/* Approve / Reject Buttons (for pending) */}
               {canApprove && !showIssuePanel && (
                 <div className="flex gap-3">
-                  <button
+                  <Button
+                    variant="outline"
                     onClick={() => setShowRejectModal(true)}
                     disabled={rejectMutation.isPending}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 disabled:opacity-50"
+                    className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
                   >
                     <X className="h-4 w-4" />
                     {rejectMutation.isPending ? 'Rejecting...' : 'Reject'}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleApprove}
                     disabled={approveMutation.isPending}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
+                    className="flex-1"
                   >
                     <Check className="h-4 w-4" />
                     {approveMutation.isPending ? 'Approving...' : 'Approve'}
-                  </button>
+                  </Button>
                 </div>
               )}
 
               {/* Issue Button (for approved) */}
               {canIssue && !showIssuePanel && (
-                <button
+                <Button
                   onClick={handleStartIssue}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground"
+                  className="w-full"
                 >
                   <Send className="h-4 w-4" />
                   Issue Materials
-                </button>
+                </Button>
               )}
 
               {/* Issue Confirm/Cancel (when issue panel is open) */}
               {showIssuePanel && (
                 <div className="flex gap-3">
-                  <button
+                  <Button
+                    variant="outline"
                     onClick={() => {
                       setShowIssuePanel(false);
                       setIssueQuantities({});
                       setActionError('');
                     }}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium"
+                    className="flex-1"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleIssue}
                     disabled={issueMutation.isPending}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
+                    className="flex-1"
                   >
                     <Send className="h-4 w-4" />
                     {issueMutation.isPending ? 'Issuing...' : 'Confirm Issue'}
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -520,59 +528,63 @@ export default function ReservationDetailPage() {
       {/* Reject Modal Overlay */}
       {showRejectModal && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
-          <div className="w-full max-w-lg rounded-t-2xl bg-white p-4 safe-bottom animate-in slide-in-from-bottom">
+          <div className="w-full max-w-lg rounded-t-2xl bg-background p-4 safe-bottom animate-in slide-in-from-bottom">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-base font-semibold">Reject Reservation</h3>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => {
                   setShowRejectModal(false);
                   setRejectReason('');
                   setActionError('');
                 }}
-                className="rounded-lg p-1 hover:bg-muted"
               >
                 <X className="h-5 w-5" />
-              </button>
+              </Button>
             </div>
 
             {actionError && (
-              <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-                {actionError}
-              </div>
+              <Alert variant="destructive" className="mb-3">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{actionError}</AlertDescription>
+              </Alert>
             )}
 
             <div className="mb-4">
-              <label htmlFor="reject_reason" className="mb-1 block text-sm font-medium">
-                Reason for rejection <span className="text-red-500">*</span>
-              </label>
-              <textarea
+              <Label htmlFor="reject_reason" className="mb-1">
+                Reason for rejection <span className="text-destructive">*</span>
+              </Label>
+              <Textarea
                 id="reject_reason"
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 rows={3}
                 placeholder="Please provide a reason..."
-                className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                className="resize-none"
               />
             </div>
 
             <div className="flex gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowRejectModal(false);
                   setRejectReason('');
                   setActionError('');
                 }}
-                className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-medium"
+                className="flex-1"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="destructive"
                 onClick={handleReject}
                 disabled={rejectMutation.isPending || !rejectReason.trim()}
-                className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+                className="flex-1"
               >
                 {rejectMutation.isPending ? 'Rejecting...' : 'Reject'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

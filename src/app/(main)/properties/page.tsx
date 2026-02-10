@@ -18,6 +18,7 @@ import { SearchBar } from '@/components/ui/search-bar';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageLoading } from '@/components/ui/loading-spinner';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const LOCATION_TYPE_COLORS: Record<string, string> = {
@@ -107,7 +108,7 @@ function TreeNode({ node, depth, defaultExpanded = false }: TreeNodeProps) {
           <span
             className={cn(
               'flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium capitalize',
-              LOCATION_TYPE_COLORS[node.type] || 'bg-gray-100 text-gray-700'
+              LOCATION_TYPE_COLORS[node.type] || 'bg-muted text-muted-foreground'
             )}
           >
             {node.type}
@@ -181,34 +182,35 @@ export default function PropertiesPage() {
         title="Properties"
         subtitle="Locations & Spaces"
         actions={
-          <Link
-            href="/properties/new"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white"
-          >
-            <Plus className="h-5 w-5" />
-          </Link>
+          <Button size="icon" className="rounded-full" asChild>
+            <Link href="/properties/new">
+              <Plus className="h-5 w-5" />
+            </Link>
+          </Button>
         }
       />
 
       {/* Search and Filter Bar */}
-      <div className="border-b border-border bg-white px-4 py-3 space-y-3">
+      <div className="border-b border-border bg-background px-4 py-3 space-y-3">
         <div className="flex items-center gap-2">
           <SearchBar
             onSearch={handleSearch}
             placeholder="Search locations..."
             className="flex-1"
           />
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-border',
+              'flex-shrink-0',
               showFilters || typeFilter
                 ? 'border-primary bg-primary/5 text-primary'
                 : 'text-muted-foreground'
             )}
           >
             <Filter className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
 
         {showFilters && (
@@ -232,7 +234,7 @@ export default function PropertiesPage() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-3 border-b border-border px-4 py-2 overflow-x-auto bg-white">
+      <div className="flex items-center gap-3 border-b border-border px-4 py-2 overflow-x-auto bg-background">
         <span className="flex-shrink-0 text-xs text-muted-foreground">
           Types:
         </span>
@@ -265,13 +267,12 @@ export default function PropertiesPage() {
               }
               action={
                 !isFiltering ? (
-                  <Link
-                    href="/properties/new"
-                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add Location
-                  </Link>
+                  <Button asChild>
+                    <Link href="/properties/new">
+                      <Plus className="h-4 w-4" />
+                      Add Location
+                    </Link>
+                  </Button>
                 ) : undefined
               }
             />

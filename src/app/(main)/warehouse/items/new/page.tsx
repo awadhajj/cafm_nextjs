@@ -9,9 +9,14 @@ import { z } from 'zod';
 import { warehouseApi } from '@/lib/api/warehouse';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageLoading } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/providers/auth-provider';
 import { Store } from '@/types/warehouse';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, AlertCircle } from 'lucide-react';
 
 const createItemSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -113,94 +118,91 @@ export default function CreateItemPage() {
       <div className="flex-1 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
           {submitError && (
-            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-              {submitError}
-            </div>
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{submitError}</AlertDescription>
+            </Alert>
           )}
 
           {/* Name */}
           <div>
-            <label htmlFor="name" className="mb-1 block text-sm font-medium">
-              Name <span className="text-red-500">*</span>
-            </label>
-            <input
+            <Label htmlFor="name" className="mb-1">
+              Name <span className="text-destructive">*</span>
+            </Label>
+            <Input
               id="name"
               type="text"
               {...register('name')}
               placeholder="Item name"
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             {errors.name && (
-              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="mb-1 block text-sm font-medium">
+            <Label htmlFor="description" className="mb-1">
               Description
-            </label>
-            <textarea
+            </Label>
+            <Textarea
               id="description"
               {...register('description')}
               rows={3}
               placeholder="Item description..."
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+              className="resize-none"
             />
           </div>
 
           {/* Barcode */}
           <div>
-            <label htmlFor="barcode" className="mb-1 block text-sm font-medium">
+            <Label htmlFor="barcode" className="mb-1">
               Barcode
-            </label>
-            <input
+            </Label>
+            <Input
               id="barcode"
               type="text"
               {...register('barcode')}
               placeholder="e.g., 123456789"
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Part Number */}
           <div>
-            <label htmlFor="part_number" className="mb-1 block text-sm font-medium">
+            <Label htmlFor="part_number" className="mb-1">
               Part Number
-            </label>
-            <input
+            </Label>
+            <Input
               id="part_number"
               type="text"
               {...register('part_number')}
               placeholder="e.g., PN-12345"
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Category ID */}
           <div>
-            <label htmlFor="category_id" className="mb-1 block text-sm font-medium">
+            <Label htmlFor="category_id" className="mb-1">
               Category ID
-            </label>
-            <input
+            </Label>
+            <Input
               id="category_id"
               type="text"
               {...register('category_id')}
               placeholder="Category identifier"
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Default Store */}
           <div>
-            <label htmlFor="default_store_id" className="mb-1 block text-sm font-medium">
+            <Label htmlFor="default_store_id" className="mb-1">
               Default Store
-            </label>
+            </Label>
             <div className="relative">
               <select
                 id="default_store_id"
                 {...register('default_store_id')}
-                className="w-full appearance-none rounded-lg border border-border bg-white px-3 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="">Select a store (optional)</option>
                 {stores.map((store: Store) => (
@@ -216,74 +218,72 @@ export default function CreateItemPage() {
           {/* Min / Max Level */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="min_level" className="mb-1 block text-sm font-medium">
+              <Label htmlFor="min_level" className="mb-1">
                 Min Level
-              </label>
-              <input
+              </Label>
+              <Input
                 id="min_level"
                 type="number"
                 min="0"
                 step="1"
                 {...register('min_level')}
                 placeholder="0"
-                className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
               {errors.min_level && (
-                <p className="mt-1 text-xs text-red-500">{errors.min_level.message}</p>
+                <p className="mt-1 text-xs text-destructive">{errors.min_level.message}</p>
               )}
             </div>
             <div>
-              <label htmlFor="max_level" className="mb-1 block text-sm font-medium">
+              <Label htmlFor="max_level" className="mb-1">
                 Max Level
-              </label>
-              <input
+              </Label>
+              <Input
                 id="max_level"
                 type="number"
                 min="0"
                 step="1"
                 {...register('max_level')}
                 placeholder="0"
-                className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
               {errors.max_level && (
-                <p className="mt-1 text-xs text-red-500">{errors.max_level.message}</p>
+                <p className="mt-1 text-xs text-destructive">{errors.max_level.message}</p>
               )}
             </div>
           </div>
 
           {/* Unit Price */}
           <div>
-            <label htmlFor="unit_price" className="mb-1 block text-sm font-medium">
+            <Label htmlFor="unit_price" className="mb-1">
               Unit Price
-            </label>
+            </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                 $
               </span>
-              <input
+              <Input
                 id="unit_price"
                 type="number"
                 min="0"
                 step="0.01"
                 {...register('unit_price')}
                 placeholder="0.00"
-                className="w-full rounded-lg border border-border py-2.5 pl-7 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="pl-7"
               />
             </div>
             {errors.unit_price && (
-              <p className="mt-1 text-xs text-red-500">{errors.unit_price.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.unit_price.message}</p>
             )}
           </div>
 
           {/* Submit */}
           <div className="pb-4">
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting || createMutation.isPending}
-              className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
+              className="w-full"
             >
               {createMutation.isPending ? 'Creating...' : 'Create Item'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

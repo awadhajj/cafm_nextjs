@@ -74,7 +74,7 @@ export default function ScanPage() {
         onClose={() => router.back()}
       />
       {error && (
-        <div className="fixed bottom-24 left-4 right-4 z-50 rounded-lg bg-red-500 px-4 py-3 text-center text-sm text-white">
+        <div className="fixed bottom-24 left-4 right-4 z-50 rounded-lg bg-destructive px-4 py-3 text-center text-sm text-white">
           {error}
           <button onClick={() => setError('')} className="ml-2 underline">
             Scan Again

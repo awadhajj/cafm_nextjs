@@ -20,6 +20,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageLoading } from '@/components/ui/loading-spinner';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
+import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -86,17 +87,16 @@ export default function PropertyServiceRequestsPage() {
         showBack
         backHref={`/properties/${id}`}
         actions={
-          <Link
-            href={`/service-requests/new?location_id=${id}`}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white"
-          >
-            <Plus className="h-5 w-5" />
-          </Link>
+          <Button size="icon" className="rounded-full" asChild>
+            <Link href={`/service-requests/new?location_id=${id}`}>
+              <Plus className="h-5 w-5" />
+            </Link>
+          </Button>
         }
       />
 
       {/* Search */}
-      <div className="border-b border-border bg-white px-4 py-3">
+      <div className="border-b border-border bg-background px-4 py-3">
         <SearchBar
           onSearch={handleSearch}
           placeholder="Search service requests..."
@@ -119,13 +119,12 @@ export default function PropertyServiceRequestsPage() {
               }
               action={
                 !debouncedSearch ? (
-                  <Link
-                    href={`/service-requests/new?location_id=${id}`}
-                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Create Request
-                  </Link>
+                  <Button asChild>
+                    <Link href={`/service-requests/new?location_id=${id}`}>
+                      <Plus className="h-4 w-4" />
+                      Create Request
+                    </Link>
+                  </Button>
                 ) : undefined
               }
             />

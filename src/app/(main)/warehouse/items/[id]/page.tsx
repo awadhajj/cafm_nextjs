@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { warehouseApi } from '@/lib/api/warehouse';
 import { PageHeader } from '@/components/ui/page-header';
+import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageLoading } from '@/components/ui/loading-spinner';
@@ -88,12 +89,11 @@ export default function ItemDetailPage() {
           title="Item not found"
           description="The requested item could not be found."
           action={
-            <button
+            <Button
               onClick={() => router.push('/warehouse/items')}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
             >
               Back to Items
-            </button>
+            </Button>
           }
         />
       </div>
@@ -114,12 +114,13 @@ export default function ItemDetailPage() {
         backHref="/warehouse/items"
         actions={
           hasPermission('warehouse.items.update') ? (
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => router.push(`/warehouse/items/${itemId}/edit`)}
-              className="rounded-lg p-2 hover:bg-muted"
             >
               <Edit className="h-4 w-4" />
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -127,7 +128,7 @@ export default function ItemDetailPage() {
       <PullToRefresh onRefresh={handleRefresh} className="flex-1">
         <div className="space-y-4 p-4">
           {/* Item Image */}
-          <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
+          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
             {item.image_url ? (
               <div className="relative">
                 <img
@@ -197,7 +198,7 @@ export default function ItemDetailPage() {
           )}
 
           {/* Item Info Card */}
-          <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
             <h2 className="text-base font-semibold">{item.name}</h2>
             {item.description && (
               <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>
@@ -253,7 +254,7 @@ export default function ItemDetailPage() {
           </div>
 
           {/* Stock Summary Card */}
-          <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
             <h3 className="text-sm font-semibold mb-3">Stock Summary</h3>
             <div className="grid grid-cols-3 gap-3">
               <div className="rounded-lg bg-blue-50 p-3 text-center">
@@ -303,7 +304,7 @@ export default function ItemDetailPage() {
               <h3 className="mb-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                 Stock by Store
               </h3>
-              <div className="rounded-xl border border-border bg-white shadow-sm divide-y divide-border">
+              <div className="rounded-xl border border-border bg-card shadow-sm divide-y divide-border">
                 {item.stores.map((storeItem: ItemStore) => (
                   <div key={storeItem.id} className="px-4 py-3">
                     <div className="flex items-center justify-between">

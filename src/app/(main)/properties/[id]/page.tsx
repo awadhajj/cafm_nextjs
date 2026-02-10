@@ -240,7 +240,7 @@ export default function PropertyDetailPage() {
             <span
               className={cn(
                 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize',
-                LOCATION_TYPE_COLORS[locationType] || 'bg-gray-100 text-gray-700'
+                LOCATION_TYPE_COLORS[locationType] || 'bg-muted text-muted-foreground'
               )}
             >
               {LOCATION_TYPE_LABELS[locationType] || locationType}
@@ -503,7 +503,7 @@ export default function PropertyDetailPage() {
                     <span
                       className={cn(
                         'flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium capitalize',
-                        LOCATION_TYPE_COLORS[child.type] || 'bg-gray-100 text-gray-700'
+                        LOCATION_TYPE_COLORS[child.type] || 'bg-muted text-muted-foreground'
                       )}
                     >
                       {child.type}

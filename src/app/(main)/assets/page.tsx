@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { PageLoading } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
 import { Package, Plus, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { Asset } from '@/types/asset';
 
@@ -44,12 +45,13 @@ export default function AssetsPage() {
       <PageHeader
         title="Assets"
         actions={
-          <button
+          <Button
             onClick={() => router.push('/assets/new')}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white"
+            size="icon"
+            className="h-9 w-9 rounded-lg"
           >
             <Plus className="h-5 w-5" />
-          </button>
+          </Button>
         }
       />
 
@@ -80,7 +82,7 @@ export default function AssetsPage() {
                 <button
                   key={asset.id}
                   onClick={() => router.push(`/assets/${asset.id}`)}
-                  className="flex w-full items-start gap-3 rounded-xl border border-border bg-white p-4 text-left transition-colors hover:bg-muted/50"
+                  className="flex w-full items-start gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:bg-muted/50"
                 >
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
                     <Package className="h-5 w-5 text-muted-foreground" />
@@ -110,25 +112,27 @@ export default function AssetsPage() {
               {/* Pagination */}
               {pagination && pagination.last_page > 1 && (
                 <div className="flex items-center justify-between pt-2">
-                  <button
+                  <Button
+                    variant="ghost"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page <= 1}
-                    className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-muted-foreground disabled:opacity-40"
+                    className="gap-1 text-muted-foreground"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     Previous
-                  </button>
+                  </Button>
                   <span className="text-sm text-muted-foreground">
                     Page {pagination.current_page} of {pagination.last_page}
                   </span>
-                  <button
+                  <Button
+                    variant="ghost"
                     onClick={() => setPage((p) => Math.min(pagination.last_page, p + 1))}
                     disabled={page >= pagination.last_page}
-                    className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-muted-foreground disabled:opacity-40"
+                    className="gap-1 text-muted-foreground"
                   >
                     Next
                     <ChevronRight className="h-4 w-4" />
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { warehouseApi } from '@/lib/api/warehouse';
 import { reservationsApi } from '@/lib/api/reservations';
 import { PageHeader } from '@/components/ui/page-header';
-import { Tabs } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { SearchBar } from '@/components/ui/search-bar';
 import { EmptyState } from '@/components/ui/empty-state';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -96,12 +97,6 @@ export default function WarehousePage() {
     setSearch(query);
   }, []);
 
-  const tabs = [
-    { key: 'stores', label: 'Stores', count: storesData?.pagination?.total },
-    { key: 'items', label: 'Items', count: itemsData?.pagination?.total },
-    { key: 'reservations', label: 'Reservations', count: reservationsData?.pagination?.total },
-  ];
-
   const searchPlaceholder = useMemo(() => {
     switch (activeTab) {
       case 'stores':
@@ -118,22 +113,22 @@ export default function WarehousePage() {
   const headerActions = (
     <div className="flex items-center gap-2">
       {activeTab === 'items' && hasPermission('warehouse.items.create') && (
-        <button
+        <Button
           onClick={() => router.push('/warehouse/items/new')}
-          className="flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
+          size="sm"
         >
           <Plus className="h-4 w-4" />
           Item
-        </button>
+        </Button>
       )}
       {activeTab === 'reservations' && hasPermission('warehouse.reservations.create') && (
-        <button
+        <Button
           onClick={() => router.push('/warehouse/reservations/new')}
-          className="flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
+          size="sm"
         >
           <Plus className="h-4 w-4" />
           Reserve
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -142,7 +137,28 @@ export default function WarehousePage() {
     <div className="flex h-full flex-col">
       <PageHeader title="Warehouse" actions={headerActions} />
 
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="w-full">
+          <TabsTrigger value="stores">
+            Stores
+            {storesData?.pagination?.total !== undefined && (
+              <span className="ml-1 text-xs text-muted-foreground">({storesData.pagination.total})</span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="items">
+            Items
+            {itemsData?.pagination?.total !== undefined && (
+              <span className="ml-1 text-xs text-muted-foreground">({itemsData.pagination.total})</span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="reservations">
+            Reservations
+            {reservationsData?.pagination?.total !== undefined && (
+              <span className="ml-1 text-xs text-muted-foreground">({reservationsData.pagination.total})</span>
+            )}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <div className="px-4 py-3">
         <SearchBar

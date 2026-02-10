@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { PageLoading } from '@/components/ui/loading-spinner';
 import { ImageUploader } from '@/components/camera/image-uploader';
+import { Button } from '@/components/ui/button';
 import {
   Package,
   Pencil,
@@ -122,12 +123,14 @@ export default function AssetDetailPage() {
         showBack
         backHref="/assets"
         actions={
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => router.push(`/assets/${id}/edit`)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-muted"
+            className="h-9 w-9 rounded-lg"
           >
             <Pencil className="h-4 w-4" />
-          </button>
+          </Button>
         }
       />
 
@@ -160,7 +163,7 @@ export default function AssetDetailPage() {
                     <button
                       type="button"
                       onClick={() => handleImageRemove(img.id)}
-                      className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white"
+                      className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white"
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>
@@ -217,10 +220,10 @@ export default function AssetDetailPage() {
         <div className="space-y-2 px-4 py-4">
           <button
             onClick={() => router.push(`/assets/${id}/service-requests`)}
-            className="flex w-full items-center gap-3 rounded-xl border border-border bg-white p-4 text-left transition-colors hover:bg-muted/50"
+            className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:bg-muted/50"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
-              <Wrench className="h-5 w-5 text-blue-600" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950">
+              <Wrench className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <p className="text-sm font-medium">Service Requests</p>
@@ -228,15 +231,16 @@ export default function AssetDetailPage() {
             </div>
           </button>
 
-          <button
+          <Button
             onClick={() =>
               router.push(`/service-requests/new?asset_id=${id}&asset_name=${encodeURIComponent(asset.asset_name)}`)
             }
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white"
+            className="w-full gap-2 py-3 text-sm font-semibold"
+            size="lg"
           >
             <Wrench className="h-4 w-4" />
             Create Service Request
-          </button>
+          </Button>
         </div>
       </div>
 
