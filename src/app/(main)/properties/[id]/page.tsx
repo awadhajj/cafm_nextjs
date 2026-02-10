@@ -271,7 +271,7 @@ export default function PropertyDetailPage() {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  fileInputRef.current?.click();
+                  cameraInputRef.current?.click();
                 }}
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50"
               >
