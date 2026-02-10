@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { serviceRequestsApi } from '@/lib/api/service-requests';
@@ -100,7 +100,7 @@ export default function NewServiceRequestPage() {
   const prefilledAssetId = searchParams.get('asset_id') || '';
 
   // Wizard state
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(prefilledLocationId ? 2 : 1);
   const [locationId, setLocationId] = useState(prefilledLocationId);
   const [assetId, setAssetId] = useState(prefilledAssetId);
   const [selectedParent, setSelectedParent] = useState<IssueCategory | null>(null);
@@ -110,6 +110,21 @@ export default function NewServiceRequestPage() {
   const [locationSearch, setLocationSearch] = useState('');
   const [serverError, setServerError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // If we have an asset_id but no location_id, fetch the asset to resolve its location
+  const { data: prefilledAssetData } = useQuery({
+    queryKey: ['asset', prefilledAssetId],
+    queryFn: () => assetsApi.show(prefilledAssetId),
+    enabled: !!prefilledAssetId && !prefilledLocationId,
+  });
+
+  // Once asset data loads, set its location and skip to step 2
+  useEffect(() => {
+    if (prefilledAssetData?.data?.location_id && !prefilledLocationId) {
+      setLocationId(prefilledAssetData.data.location_id);
+      setStep(2);
+    }
+  }, [prefilledAssetData, prefilledLocationId]);
 
   // Data queries
   const { data: locationsData } = useQuery({
@@ -136,7 +151,11 @@ export default function NewServiceRequestPage() {
   const selectedLocation = flatLocations.find((l) => l.id === locationId);
 
   const assets: Asset[] = assetsData?.data || [];
-  const selectedAsset = assets.find((a) => a.id === assetId);
+  const prefilledAssetName = searchParams.get('asset_name')
+    ? decodeURIComponent(searchParams.get('asset_name')!)
+    : '';
+  const selectedAsset = assets.find((a) => a.id === assetId) || prefilledAssetData?.data;
+  const selectedAssetName = selectedAsset?.asset_name || prefilledAssetName;
 
   const categories: IssueCategory[] = categoriesData?.data || [];
   const parentCategories = categories;
@@ -400,12 +419,12 @@ export default function NewServiceRequestPage() {
                 Change
               </button>
             </div>
-            {selectedAsset && (
+            {(selectedAssetName || assetId) && (
               <div className="flex items-center gap-3 px-4 py-3">
                 <Package className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-muted-foreground">Asset</p>
-                  <p className="text-sm font-medium truncate">{selectedAsset.asset_name}</p>
+                  <p className="text-sm font-medium truncate">{selectedAssetName || assetId}</p>
                 </div>
               </div>
             )}
