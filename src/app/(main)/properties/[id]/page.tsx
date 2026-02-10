@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -26,6 +26,8 @@ import {
   ChevronLeft,
   ExternalLink,
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
+import { toast } from 'sonner';
 import { locationsApi } from '@/lib/api/locations';
 import { LocationImage, BreadcrumbItem } from '@/types/location';
 import { PageHeader } from '@/components/ui/page-header';
@@ -395,14 +397,29 @@ export default function PropertyDetailPage() {
             </div>
           )}
 
-          {/* QR / Location Identifier */}
+          {/* QR Code */}
           {location.location_identifier && (
             <div className="flex items-center gap-3 px-4 py-3">
               <QrCode className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground">Location Identifier</p>
-                <p className="text-sm font-mono">{location.location_identifier}</p>
+                <p className="text-xs text-muted-foreground">QR Code</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(location.location_identifier!);
+                    toast.success('Code copied to clipboard');
+                  }}
+                  className="text-sm font-mono text-left hover:text-primary transition-colors"
+                >
+                  {location.location_identifier}
+                </button>
               </div>
+              <QRCodeSVG
+                value={location.location_identifier}
+                size={48}
+                level="M"
+                className="flex-shrink-0 rounded"
+              />
             </div>
           )}
 
