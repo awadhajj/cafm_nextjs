@@ -9,10 +9,12 @@ import { Input } from '@/components/ui/input';
 interface QRScannerProps {
   onScan: (result: string) => void;
   onClose?: () => void;
+  title?: string;
 }
 
-export function QRScanner({ onScan, onClose }: QRScannerProps) {
+export function QRScanner({ onScan, onClose, title = 'Scan QR / Barcode' }: QRScannerProps) {
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const isScanningRef = useRef(false);
   const [isScanning, setIsScanning] = useState(false);
   const [showManualInput, setShowManualInput] = useState(false);
   const [manualCode, setManualCode] = useState('');
@@ -27,6 +29,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         (decodedText) => {
+          isScanningRef.current = false;
           scanner.stop().catch(() => {});
           setIsScanning(false);
           onScan(decodedText);
@@ -34,6 +37,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
         () => {} // ignore scan failures
       );
 
+      isScanningRef.current = true;
       setIsScanning(true);
       setError('');
     } catch (err) {
@@ -47,7 +51,10 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
       startScanner();
     }
     return () => {
-      scannerRef.current?.stop().catch(() => {});
+      if (isScanningRef.current && scannerRef.current) {
+        isScanningRef.current = false;
+        scannerRef.current.stop().catch(() => {});
+      }
     };
   }, [showManualInput, startScanner]);
 
@@ -63,7 +70,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
       <div className="relative flex h-full flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3">
-          <h2 className="text-lg font-semibold text-white">Scan QR / Barcode</h2>
+          <h2 className="text-lg font-semibold text-white">{title}</h2>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
