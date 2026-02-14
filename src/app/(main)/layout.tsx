@@ -36,7 +36,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-dvh items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     );
@@ -45,7 +45,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   if (!isAuthenticated) return null;
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       {/* Main content area */}
       <main className="flex-1 overflow-y-auto">{children}</main>
 
