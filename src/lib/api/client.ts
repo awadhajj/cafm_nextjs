@@ -17,7 +17,9 @@ apiClient.interceptors.request.use((config) => {
     }
     const tenant = localStorage.getItem('tenant_subdomain');
     if (tenant) {
-      config.baseURL = `http://${tenant}.localhost:8002/api`;
+      const host = process.env.NEXT_PUBLIC_API_HOST || 'localhost:8002';
+      const protocol = host.includes('localhost') ? 'http' : 'https';
+      config.baseURL = `${protocol}://${tenant}.${host}/api`;
       config.headers['X-Tenant'] = tenant;
     }
   }
@@ -31,7 +33,7 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && typeof window !== 'undefined') {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      window.location.href = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/login`;
     }
     return Promise.reject(error);
   }
